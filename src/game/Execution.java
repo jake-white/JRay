@@ -1,3 +1,4 @@
+package game;
 
 public class Execution {
 	static Game newGame;
