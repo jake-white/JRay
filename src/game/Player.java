@@ -16,7 +16,7 @@ public class Player {
 	}
 	
 	public void turn(){
-		angle+= 0;
+		angle+= 0.01;
 	}
 	
 	public RayPoint getPosition(){

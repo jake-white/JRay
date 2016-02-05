@@ -37,11 +37,12 @@ public class World {
 				Color testingColor = new Color(worldImg.getRGB(x, y));
 				if(testingColor.getRGB() == playerInsertion.getRGB()){
 					//found the player square, inserting player!
-					currentGame.getPlayer().setPosition(x, y);
-					map[x][y] = emptySpace;
+					System.out.println("player found at " + y + ", " + x);
+					currentGame.getPlayer().setPosition(y, x);
+					map[y][x] = emptySpace;
 				}
 				else
-					map[x][y] = testingColor;
+					map[y][x] = testingColor;
 			}
 		}
 	}
