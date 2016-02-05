@@ -13,6 +13,7 @@ public class Tick implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		//code executed every tick
 		currentGame.render();
+		currentGame.getPlayer().turn();
 	}
 
 

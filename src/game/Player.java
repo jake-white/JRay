@@ -1,19 +1,25 @@
 package game;
-import java.awt.Point;
+
+import rendering.RayPoint;
 
 public class Player {
-	double FOV = 0, angle = 0;
-	Point position;
+	double FOV = Math.PI/2, angle = 0;
+	RayPoint position;
 	
 	public Player(){
-		
+		position = new RayPoint();
 	}
 	
 	public void setPosition(int x, int y){
+		System.out.println(x);
 		this.position.setLocation(x, y);
 	}
 	
-	public Point getPosition(){
+	public void turn(){
+		angle+= 0;
+	}
+	
+	public RayPoint getPosition(){
 		return position;
 	}
 	

@@ -31,11 +31,11 @@ public class World {
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
 		map = new Color[width][height];
-		Color emptySpace = new Color(0, 0, 0);
+		Color emptySpace = new Color(255, 255, 255);
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
 				Color testingColor = new Color(worldImg.getRGB(x, y));
-				if(testingColor==playerInsertion){
+				if(testingColor.getRGB() == playerInsertion.getRGB()){
 					//found the player square, inserting player!
 					currentGame.getPlayer().setPosition(x, y);
 					map[x][y] = emptySpace;
@@ -44,6 +44,17 @@ public class World {
 					map[x][y] = testingColor;
 			}
 		}
+	}
+	
+	public Color getColorAt(double x, double y){
+		return map[(int)x][(int)y];
+	}
+	public int getWidth(){
+		return width;
+	}
+	
+	public int getHeight(){
+		return height;
 	}
 
 }

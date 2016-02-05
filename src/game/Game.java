@@ -22,6 +22,8 @@ public class Game {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
 		world = new World(this, "world.png");
+		System.out.println("hi");
+		currentScreen.rayCast();
 		gameLoop = new Timer(20, new Tick(this));
 		gameLoop.start();
 	}
@@ -33,9 +35,13 @@ public class Game {
 		return currentScreen;
 	}
 	
+	public World getWorld(){
+		return world;
+	}
+	
 	public void render(){
-		mainFrame.repaint();
 		currentScreen.rayCast();
 		currentScreen.display();
+		mainFrame.repaint();
 	}
 }
