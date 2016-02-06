@@ -24,7 +24,7 @@ public class Game {
 		world = new World(this, "world.png");
 		System.out.println("hi");
 		currentScreen.rayCast();
-		gameLoop = new Timer(20, new Tick(this));
+		gameLoop = new Timer(1, new Tick(this));
 		gameLoop.start();
 	}
 	

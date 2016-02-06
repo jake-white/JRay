@@ -18,16 +18,26 @@ public class Screen extends JPanel{
 	}
 	
 	@Override
-	public void paintComponent(Graphics g){ //Overriding the JPanel painting
+	public void paintComponent(Graphics g){
+		//Overriding the JPanel painting
 		Graphics2D g2d = (Graphics2D) g;
+		double playerHeight = currentGame.getPlayer().getHeight();
+		g2d.setColor(Color.CYAN);
+		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
+		g2d.setColor(Color.GREEN);
+		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
+		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
 		for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
-			if(render.getColor(i) != Color.WHITE){
+			if(render.getColor(i).getRGB() != Color.WHITE.getRGB()){
 				double columnHeight = this.getHeight()/render.getColumn(i);
-				g2d.setColor(render.getColor(i));
-				double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2));
-				double secondPoint = Math.floor((this.getHeight()/2 + columnHeight/2));
-				g2d.drawLine(i,  (int) firstPoint, i, (int) secondPoint);
+				Color thisColor = render.getColor(i);
+				columnHeight /= 2;
+				g2d.setColor(thisColor);
+				double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
+						columnHeight*playerHeight);
+				double secondPoint = Math.floor(firstPoint + columnHeight);
+				g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
 			}
 		}
 	}

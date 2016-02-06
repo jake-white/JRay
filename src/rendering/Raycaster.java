@@ -32,9 +32,8 @@ public class Raycaster {
 		for(int i = 0; i < screenWidth; ++i, currentAngle-=increment){
 			double fisheye = Math.cos(Math.abs(currentAngle-playerAngle));
 			currentAngle = validateAngle(currentAngle);
-			boolean posDirX = currentAngle < Math.PI/2 || currentAngle > Math.PI *(3/2);
+			boolean posDirX = (currentAngle < Math.PI/2) || (currentAngle > (Math.PI *(3.0/2.0)));
 			boolean posDirY = currentAngle > Math.PI;
-			System.out.println(posDirX + " & " + posDirY);
 			double startX, startY, deltaX, deltaY, distFromPlayerX, distFromPlayerY;
 			//checking horizontally
             if(posDirY){
@@ -45,6 +44,7 @@ public class Raycaster {
                 startY = (int) playerY;
                 deltaY = -1;
             }
+            
             distFromPlayerY = Math.abs(startY - playerY);
             distFromPlayerX = Math.abs((distFromPlayerY/Math.tan(currentAngle)));
             if(posDirX){
@@ -126,9 +126,9 @@ public class Raycaster {
                 currentX += deltaX;
                 currentY += deltaY;
             }
-            if(!Double.isNaN(distanceX) && !Double.isNaN(distanceY))
+            if(!Double.isNaN(distanceX) || !Double.isNaN(distanceY))
             {
-	            if(distanceX <= distanceY){
+	            if(distanceX <= distanceY || Double.isNaN(distanceY)){
 	            	columns.add(distanceX);
 	                colors.add(colorX);
 	            }
@@ -141,8 +141,7 @@ public class Raycaster {
             	columns.add(Double.NaN);
                 colors.add(Color.WHITE);
             }
-            	
-			
+			//hey
 		}
 	}
 	
