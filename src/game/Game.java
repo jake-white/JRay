@@ -1,19 +1,24 @@
 package game;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import physics.InputManager;
 import rendering.Screen;
 import rendering.Tick;
 import rendering.World;
 
 public class Game {
 	Screen currentScreen;
+	InputManager input;
 	Timer gameLoop;
 	World world;
 	JFrame mainFrame; //hacking the mainframe with a visual basic GUI
 	Player player;
 	
 	public Game(){
+		this.input = new InputManager();
 		currentScreen = new Screen(this);
 		player = new Player();
 		mainFrame = new JFrame();
@@ -21,6 +26,7 @@ public class Game {
 		mainFrame.getContentPane().add(currentScreen);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
+		mainFrame.addKeyListener(input);
 		world = new World(this, "world.png");
 		System.out.println("hi");
 		currentScreen.rayCast();
@@ -40,8 +46,30 @@ public class Game {
 	}
 	
 	public void render(){
+		parseInput(player);
 		currentScreen.rayCast();
 		currentScreen.display();
 		mainFrame.repaint();
+	}
+	
+	public void parseInput(Player p){
+		if(input.input(KeyEvent.VK_W)){
+			p.walk(0.01);
+		}
+		else if(input.input(KeyEvent.VK_S)){
+			p.walk(-0.01);
+		}
+		if(input.input(KeyEvent.VK_Q)){
+			p.turn(0.01);
+		}
+		else if(input.input(KeyEvent.VK_E)){
+			p.turn(-0.01);
+		}
+		if(input.input(KeyEvent.VK_Z)){
+			p.up(0.01);
+		}
+		else if(input.input(KeyEvent.VK_X)){
+			p.up(-0.01);
+		}
 	}
 }

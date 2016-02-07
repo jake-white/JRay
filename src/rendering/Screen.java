@@ -2,6 +2,7 @@ package rendering;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -29,15 +30,21 @@ public class Screen extends JPanel{
 		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
 		for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
-			if(render.getColor(i).getRGB() != Color.WHITE.getRGB()){
-				double columnHeight = this.getHeight()/render.getColumn(i);
-				Color thisColor = render.getColor(i);
-				columnHeight /= 2;
-				g2d.setColor(thisColor);
-				double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
-						columnHeight*playerHeight);
-				double secondPoint = Math.floor(firstPoint + columnHeight);
-				g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
+			ArrayList<Double> distanceList = render.getColumn(i);
+			ArrayList<Color> colorList = render.getColor(i);
+			for(int j = distanceList.size() - 1; j >= 0; --j){
+				if(colorList.get(j).getRGB() != Color.WHITE.getRGB()){
+					double columnHeight = this.getHeight()/distanceList.get(j);
+					Color thisColor = colorList.get(j);
+					columnHeight /= 2;
+					g2d.setColor(thisColor);
+					double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
+							columnHeight*playerHeight);
+					double secondPoint = Math.floor(firstPoint + columnHeight);
+					g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
+					g2d.setColor(Color.BLACK);
+					g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
+				}
 			}
 		}
 	}

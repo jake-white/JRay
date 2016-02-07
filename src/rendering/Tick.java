@@ -1,8 +1,11 @@
 package rendering;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import game.Game;
+import game.Player;
+import physics.InputManager;
 
 public class Tick implements ActionListener{
 	Game currentGame;
@@ -15,8 +18,6 @@ public class Tick implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		//code executed every tick
 		currentGame.render();
-		currentGame.getPlayer().turn();
-		currentGame.getPlayer().up();
 		long difference = System.currentTimeMillis() - frameTime;
 		if(difference == 0)
 			difference = 1;

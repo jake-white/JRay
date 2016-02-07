@@ -1,18 +1,19 @@
 package rendering;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import game.Game;
 
 public class Raycaster {
 	Game currentGame;
-	ArrayList<Double> columns;
-	ArrayList<Color> colors;
+	ArrayList<ArrayList<Double>> columns;
+	ArrayList<ArrayList<Color>> colors;
 	
 	public Raycaster(Game game){
 		this.currentGame = game;
-		columns = new ArrayList<Double>();
-		colors = new ArrayList<Color>();
+		columns = new ArrayList<ArrayList<Double>>();
+		colors = new ArrayList<ArrayList<Color>>();
 	}
 	public void cast(){
 		int screenWidth = currentGame.getScreen().getWidth();
@@ -31,7 +32,7 @@ public class Raycaster {
 		
 		for(int i = 0; i < screenWidth; ++i, currentAngle-=increment){
 			double fisheye = Math.cos(Math.abs(currentAngle-playerAngle));
-			currentAngle = validateAngle(currentAngle);
+			currentAngle = RayPoint.validateAngle(currentAngle);
 			boolean posDirX = (currentAngle < Math.PI/2) || (currentAngle > (Math.PI *(3.0/2.0)));
 			boolean posDirY = currentAngle > Math.PI;
 			double startX, startY, deltaX, deltaY, distFromPlayerX, distFromPlayerY;
@@ -58,10 +59,10 @@ public class Raycaster {
             boolean hit = false;
             double currentX = startX;
             double currentY = startY;
-            double distanceX = 0, distanceY = 0;
-            Color colorX = null, colorY = null;
             double checkX = currentX;
             double checkY = currentY;
+            ArrayList<Double> allHits = new ArrayList<Double>();
+            ArrayList<Color> allColors = new ArrayList<Color>();
             
             while(!hit){
                 checkX = currentX;
@@ -70,14 +71,13 @@ public class Raycaster {
                 else
                     checkY = (int) currentY - 1;
                 if (checkX > maxX || checkY > maxY || checkX < 0 || checkY < 0) {
-                    distanceX = Double.NaN;
-                    colorX = Color.WHITE;
                     hit = true;
                 }
                 else if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
-                    hit = true;
-                    distanceX = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
-                    colorX = currentGame.getWorld().getColorAt(checkX, checkY);
+                    allHits.add(distanceTo(playerX, playerY, currentX, currentY)*fisheye);
+                    allColors.add(currentGame.getWorld().getColorAt(checkX, checkY));
+                    allHits.add(distanceTo(playerX, playerY, checkX, checkY)*fisheye);
+                    allColors.add(currentGame.getWorld().getColorAt(checkX, checkY));
                 }
 
                 currentX += deltaX;
@@ -114,62 +114,43 @@ public class Raycaster {
                 else
                     checkX = (int) currentX - 1;
                 if(checkX > maxX || checkY > maxY || checkX < 0 || checkY < 0){
-                    distanceY = Double.NaN;
-                    colorY = Color.WHITE;
                     hit = true;
                 }
                 else if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
-                    hit = true;
-                    distanceY = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
-                    colorY = currentGame.getWorld().getColorAt(checkX, checkY);
+                    allHits.add(distanceTo(playerX, playerY, currentX, currentY)*fisheye);
+                    allColors.add(currentGame.getWorld().getColorAt(checkX, checkY));
+                    allHits.add(distanceTo(playerX, playerY, checkX, checkY)*fisheye);
+                    allColors.add(currentGame.getWorld().getColorAt(checkX, checkY));
+                    
                 }
                 currentX += deltaX;
                 currentY += deltaY;
             }
-            if(!Double.isNaN(distanceX) || !Double.isNaN(distanceY))
-            {
-	            if(distanceX <= distanceY || Double.isNaN(distanceY)){
-	            	columns.add(distanceX);
-	                colors.add(colorX);
-	            }
-	            else{
-	            	columns.add(distanceY);
-	                colors.add(colorY);
-	            }
-            }
-            else {
-            	columns.add(Double.NaN);
-                colors.add(Color.WHITE);
-            }
-			//hey
+            
+	        if(!allHits.isEmpty()) {
+	        	columns.add(allHits);
+	        	colors.add(allColors);
+	        }
+	        else {
+	        	ArrayList<Double> NaNList = new ArrayList<Double>();
+	        	NaNList.add(Double.NaN);
+	        	ArrayList<Color> whiteList = new ArrayList<Color>();
+	        	whiteList.add(Color.WHITE);
+	        	columns.add(NaNList);
+	        	colors.add(whiteList);
+	        }
+	        	
+	        
 		}
 	}
 	
-	public double getColumn(int col){
-		try{
-			return columns.get(col).doubleValue();
-		}
-		catch(Exception crazyIndex){
-			return Double.NaN;
-		}
+	public ArrayList<Double> getColumn(int col){
+			return columns.get(col);
 	}
 
 	
-	public Color getColor(int col){
-		try{
+	public ArrayList<Color> getColor(int col){
 			return colors.get(col);
-		}
-		catch(Exception crazyIndex){
-			return Color.WHITE;
-		}
-	}
-
-	public double validateAngle(double angle){
-	    while(angle >= 2*Math.PI)
-	        angle -= 2*Math.PI;
-	    while( angle < 0)
-	        angle += 2*Math.PI;
-	    return angle;
 	}
 	
     public double distanceTo(double x1, double y1, double  x2, double y2){
