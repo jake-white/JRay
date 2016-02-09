@@ -3,7 +3,7 @@ package game;
 import rendering.RayPoint;
 
 public class Player {
-	double FOV = Math.PI/2, angle = Math.PI, height = 0;
+	double FOV = Math.PI/2, angle = 0, height = 0;
 	RayPoint position;
 	
 	public Player(){

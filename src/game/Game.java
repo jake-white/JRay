@@ -54,22 +54,22 @@ public class Game {
 	
 	public void parseInput(Player p){
 		if(input.input(KeyEvent.VK_W)){
-			p.walk(0.01);
+			p.walk(0.03);
 		}
 		else if(input.input(KeyEvent.VK_S)){
-			p.walk(-0.01);
+			p.walk(-0.03);
 		}
 		if(input.input(KeyEvent.VK_Q)){
-			p.turn(0.01);
+			p.turn(0.05);
 		}
 		else if(input.input(KeyEvent.VK_E)){
-			p.turn(-0.01);
+			p.turn(-0.05);
 		}
 		if(input.input(KeyEvent.VK_Z)){
-			p.up(0.01);
+			p.up(0.02);
 		}
 		else if(input.input(KeyEvent.VK_X)){
-			p.up(-0.01);
+			p.up(-0.02);
 		}
 	}
 }

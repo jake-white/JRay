@@ -11,6 +11,7 @@ import game.Game;
 public class World {
 	BufferedImage worldImg;
 	Color[][] map;
+	int[][] heightMap;
 	Color playerInsertion;
 	Game currentGame;
 	int width, height;
@@ -31,6 +32,7 @@ public class World {
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
 		map = new Color[width][height];
+		heightMap = new int[width][height];
 		Color emptySpace = new Color(255, 255, 255);
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
@@ -41,14 +43,23 @@ public class World {
 					currentGame.getPlayer().setPosition(x, y);
 					map[x][y] = emptySpace;
 				}
-				else
+				else{
+					if(testingColor.getRGB() == Color.GRAY.getRGB())
+						heightMap[x][y] = 3;
+					else
+						heightMap[x][y] = 1;
 					map[x][y] = testingColor;
+				}
 			}
 		}
 	}
 	
 	public Color getColorAt(double x, double y){
 		return map[(int)x][(int)y];
+	}
+	
+	public int getHeightAt(double x, double y){
+		return heightMap[(int) x][(int) y];
 	}
 	public int getWidth(){
 		return width;
