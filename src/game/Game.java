@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.Timer;
 
 import physics.InputManager;
+import rendering.Camera;
 import rendering.Screen;
 import rendering.Tick;
 import rendering.World;
@@ -15,12 +16,14 @@ public class Game {
 	Timer gameLoop;
 	World world;
 	JFrame mainFrame; //hacking the mainframe with a visual basic GUI
+	Camera playerCam;
 	Player player;
 	
 	public Game(){
 		this.input = new InputManager();
 		currentScreen = new Screen(this);
 		player = new Player();
+		playerCam = new Camera(player);
 		mainFrame = new JFrame();
 		mainFrame.setSize(800, 600);
 		mainFrame.getContentPane().add(currentScreen);
@@ -28,7 +31,7 @@ public class Game {
 		mainFrame.setVisible(true);
 		mainFrame.addKeyListener(input);
 		world = new World(this, "world.png");
-		System.out.println("hi");
+		System.out.println("Started game!");
 		currentScreen.rayCast();
 		gameLoop = new Timer(1, new Tick(this));
 		gameLoop.start();
@@ -36,6 +39,10 @@ public class Game {
 	
 	public Player getPlayer(){
 		return player;
+	}
+	
+	public Camera getCamera(){
+		return playerCam;
 	}
 	public Screen getScreen(){
 		return currentScreen;
@@ -45,10 +52,10 @@ public class Game {
 		return world;
 	}
 	
-	public void render(){
+	public void render(long frames){
 		parseInput(player);
 		currentScreen.rayCast();
-		currentScreen.display();
+		currentScreen.setFrameRate(frames);
 		mainFrame.repaint();
 	}
 	

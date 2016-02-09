@@ -34,5 +34,10 @@ public class RayPoint extends Point2D.Double{
 	        angle += 2*Math.PI;
 	    return angle;
 	}
+	
+	@Override
+	public String toString(){
+		return "("+this.x+", "+this.y+")";
+	}
 }
 

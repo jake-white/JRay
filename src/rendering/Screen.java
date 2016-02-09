@@ -15,6 +15,7 @@ import game.Game;
 public class Screen extends JPanel{
 	Game currentGame;
 	Raycaster render;
+	double frameRate;
 	
 	public Screen(Game game){
 		super();
@@ -44,7 +45,7 @@ public class Screen extends JPanel{
 		for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
 			ArrayList<Double> distanceList = render.getColumn(i);
 			ArrayList<Color> colorList = render.getColor(i);
-			ArrayList<Integer> columnLengths = render.getHeights(i);
+			ArrayList<Double> columnLengths = render.getHeights(i);
 			for(int j = 0; j < distanceList.size(); j++){
 				if(colorList.get(j).getRGB() != Color.WHITE.getRGB()){
 					double columnHeight = this.getHeight()/distanceList.get(j);
@@ -52,7 +53,7 @@ public class Screen extends JPanel{
 					g2d.setColor(thisColor);
 					double heightAdjustment = columnHeight*(columnLengths.get(j)-1);
 					double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
-							columnHeight*playerHeight - heightAdjustment);
+							(columnHeight)*playerHeight - heightAdjustment);
 					double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
 					g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
 					g2d.setColor(Color.BLACK);
@@ -61,14 +62,17 @@ public class Screen extends JPanel{
 				}
 			}
 		}
-		g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
+	//	g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
+		g2d.setColor(Color.RED);
+		g2d.drawString("FPS: " + frameRate, 0, 10);
+		g2d.drawString("Player: " + currentGame.getPlayer().toString(), 0, 20);
 	}
 	
 	public void rayCast(){
 		render.cast();
 	}
 	
-	public void display(){
-		
+	public void setFrameRate(double frames){
+		this.frameRate = frames;
 	}
 }

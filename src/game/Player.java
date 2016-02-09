@@ -3,16 +3,16 @@ package game;
 import rendering.RayPoint;
 
 public class Player {
-	double FOV = Math.PI/2, angle = 0, height = 0;
+	double height = 0, angle = 0;
+	double accelX = 0, accelY = 0;
 	RayPoint position;
 	
 	public Player(){
 		position = new RayPoint();
 	}
 	
-	public void setPosition(int x, int y){
-		System.out.println(x);
-		this.position.setLocation(x, y);
+	public void setPosition(double d, double e){
+		this.position.setLocation(d, e);
 	}
 	
 	public void turn(double inc){
@@ -26,17 +26,29 @@ public class Player {
 	public RayPoint getPosition(){
 		return position;
 	}
+
+	public double getAccelX(){
+		return accelX;
+	}
+
+	public void setAccelX(double accel){
+		this.accelX = accel;
+	}
+
+	public double getAccelY(){
+		return accelY;
+	}
+
+	public void setAccelY(double accel){
+		this.accelY = accel;
+	}
 	
-	public double getFOV(){
-		return FOV;
-	}
-
-	public double getAngle(){
-		return angle;
-	}
-
 	public double getHeight(){
 		return height;
+	}
+
+	public void setHeight(double height){
+		this.height = height;
 	}
 
 	public void walk(double inc) {
@@ -56,5 +68,13 @@ public class Player {
         this.position.increaseX(xDir*Math.abs(Math.cos(angle))*inc);
         this.position.increaseY(yDir*Math.abs(Math.sin(angle))*inc);
 		
+	}
+
+	public double getAngle() {
+		return angle;
+	}
+	
+	public String toString(){
+		return position.toString() + ": " + this.height;
 	}
 }

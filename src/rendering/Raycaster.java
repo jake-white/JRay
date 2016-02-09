@@ -8,13 +8,13 @@ import game.Game;
 public class Raycaster {
 	Game currentGame;
 	ArrayList<ArrayList<Double>> columns;
-	ArrayList<ArrayList<Integer>> heights;
+	ArrayList<ArrayList<Double>> heights;
 	ArrayList<ArrayList<Color>> colors;
 	
 	public Raycaster(Game game){
 		this.currentGame = game;
 		columns = new ArrayList<ArrayList<Double>>();
-		heights = new ArrayList<ArrayList<Integer>>();
+		heights = new ArrayList<ArrayList<Double>>();
 		colors = new ArrayList<ArrayList<Color>>();
 	}
 	public void cast(){
@@ -22,8 +22,8 @@ public class Raycaster {
 		columns.clear();
 		colors.clear();
 		heights.clear();
-		double FOV = currentGame.getPlayer().getFOV();
-		double playerAngle = currentGame.getPlayer().getAngle();
+		double FOV = currentGame.getCamera().getFOV();
+		double playerAngle = currentGame.getCamera().getAngle();
 		double startingAngle = playerAngle + FOV/2;
 		double increment = FOV/screenWidth;
 		double currentAngle = startingAngle;
@@ -67,10 +67,10 @@ public class Raycaster {
     		double insideCheckX = 0, insideCheckY = 0;
 
     		ArrayList<Double> allHits = new ArrayList<Double>();
-    		ArrayList<Integer> allHeights = new ArrayList<Integer>();
+    		ArrayList<Double> allHeights = new ArrayList<Double>();
     		ArrayList<Color> allColors = new ArrayList<Color>();
     		double checkingDistance;
-    		int checkingHeight;
+    		double checkingHeight;
     		Color checkingColor;
             
             while(!hit){
@@ -177,18 +177,17 @@ public class Raycaster {
             
 	        if(!allHits.isEmpty()) {
 	        	columns.add(allHits);
-	        	colors.add(allColors);
 	        	heights.add(allHeights);
+	        	colors.add(allColors);
 	        }
 	        else {
 	        	ArrayList<Double> NaNList = new ArrayList<Double>();
 	        	NaNList.add(Double.NaN);
-	        	ArrayList<Integer> intNaNList = new ArrayList<Integer>();
 	        	ArrayList<Color> whiteList = new ArrayList<Color>();
 	        	whiteList.add(Color.WHITE);
 	        	columns.add(NaNList);
+	        	heights.add(NaNList);
 	        	colors.add(whiteList);
-	        	heights.add(intNaNList);
 	        }
 	        	
 	        
@@ -196,7 +195,13 @@ public class Raycaster {
 	}
 	
 	public ArrayList<Double> getColumn(int col){
+		try{
 			return columns.get(col);
+		}
+		catch(Exception e){
+			System.out.println("Tried to paint too early... trying again.");
+			return null;
+		}
 	}
 	
 	public int insertAllHits(double x, ArrayList<Double> allHits){
@@ -219,10 +224,22 @@ public class Raycaster {
 
 	
 	public ArrayList<Color> getColor(int col){
+		try{
 			return colors.get(col);
+		}
+		catch(Exception e){
+			System.out.println("Tried to paint too early... trying again.");
+			return null;
+		}
 	}
-	public ArrayList<Integer> getHeights(int col){
-		return heights.get(col);
+	public ArrayList<Double> getHeights(int col){
+		try{
+			return heights.get(col);
+		}
+		catch(Exception e){
+			System.out.println("Tried to paint too early... trying again.");
+			return null;
+		}
 }
 	
     public double distanceTo(double x1, double y1, double  x2, double y2){
