@@ -18,6 +18,10 @@ public class Game {
 	JFrame mainFrame; //hacking the mainframe with a visual basic GUI
 	Camera playerCam;
 	Player player;
+	static Game newGame;
+	public static void main(String[] args){
+		newGame = new Game();
+	}
 	
 	public Game(){
 		this.input = new InputManager();
