@@ -2,6 +2,7 @@ package rendering;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -42,25 +43,64 @@ public class Screen extends JPanel{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
-			ArrayList<Double> distanceList = render.getColumn(i);
-			ArrayList<Color> colorList = render.getColor(i);
-			ArrayList<Double> columnLengths = render.getHeights(i);
-			for(int j = 0; j < distanceList.size(); j++){
-				if(colorList.get(j).getRGB() != Color.WHITE.getRGB()){
-					double columnHeight = this.getHeight()/distanceList.get(j);
-					Color thisColor = colorList.get(j);
-					g2d.setColor(thisColor);
-					double heightAdjustment = columnHeight*(columnLengths.get(j)-1);
-					double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
-							(columnHeight)*playerHeight - heightAdjustment);
-					double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
-					g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
-					g2d.setColor(Color.BLACK);
-					g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
-					g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
+		int lastTopPoint = -1;
+		int beforeLastTopPoint = -1;
+		int lastHeight = -1;
+		int beforeLastHeight = -1;
+		Point lastMap = new Point(0,0);
+		Point beforeLastMap = new Point(0,0);
+		
+		try {
+			for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
+				ArrayList<Double> distanceList = render.getColumn(i);
+				ArrayList<Color> colorList = render.getColor(i);
+				ArrayList<Double> columnLengths = render.getHeights(i);
+				ArrayList<Point> columnPoints = render.getPointOfColumn(i);
+				for(int j = 0; j < distanceList.size(); j++){
+					if(colorList.get(j).getRGB() != Color.WHITE.getRGB()){
+						int actualHeight = this.getHeight();
+						double columnHeight = this.getHeight()/distanceList.get(j);
+					//	if(colorList.size() != columnPoints.size())
+					//		System.out.println(colorList.size() + " vs " + columnPoints.size() + ", yet we maybe had trouble at element " + j);
+						Color thisColor = colorList.get(j);
+						Point currentMap = columnPoints.get(j);
+						g2d.setColor(thisColor);
+						double heightAdjustment = columnHeight*(columnLengths.get(j)-1);
+						double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
+								(columnHeight)*playerHeight - heightAdjustment);
+						double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
+						//System.out.println(currentMap + " vs " + lastMap);
+						if(lastTopPoint != -1 && lastTopPoint <= firstPoint && currentMap.equals(lastMap)){
+							g2d.drawLine(i,  (int) Math.round(lastTopPoint), i, (int) Math.round(secondPoint));
+							g2d.setColor(Color.BLACK);
+							g2d.drawLine(i,  (int) Math.round(lastTopPoint - 1), i, (int) Math.round(lastTopPoint));
+						}
+						else if(beforeLastTopPoint != -1 && beforeLastTopPoint <= firstPoint  && currentMap.equals(beforeLastMap)){
+							g2d.drawLine(i,  (int) Math.round(beforeLastTopPoint), i, (int) Math.round(secondPoint));
+							g2d.setColor(Color.BLACK);
+							g2d.drawLine(i,  (int) Math.round(beforeLastTopPoint - 1), i, (int) Math.round(beforeLastTopPoint));
+						}
+						else{
+							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
+							g2d.setColor(Color.BLACK);
+							g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
+						}
+						g2d.setColor(Color.BLACK);
+						g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
+						beforeLastTopPoint = lastTopPoint;
+						lastTopPoint = (int) Math.round(firstPoint);
+						beforeLastHeight = lastHeight;
+						lastHeight = actualHeight;
+						beforeLastMap = lastMap;
+						lastMap = currentMap;
+						//System.out.println(beforeLastMap + " " + lastMap + " " + currentMap);
+					}
 				}
 			}
+		}
+		catch(Exception e){
+		//	e.printStackTrace();
+		//	System.out.println("Something went wrong trying to paint to the screen.");
 		}
 	//	g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
 		g2d.setColor(Color.RED);

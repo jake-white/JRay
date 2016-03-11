@@ -49,7 +49,7 @@ public class World {
 					else if(testingColor.getRGB() == Color.BLUE.getRGB())
 						heightMap[x][y] = 3;
 					else if(testingColor.getRGB() == Color.MAGENTA.getRGB())
-						heightMap[x][y] = .5;
+						heightMap[x][y] = .3;
 					else
 						heightMap[x][y] = 1;
 					map[x][y] = testingColor;

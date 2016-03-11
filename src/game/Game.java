@@ -19,6 +19,7 @@ public class Game {
 	Camera playerCam;
 	Player player;
 	static Game newGame;
+	
 	public static void main(String[] args){
 		newGame = new Game();
 	}

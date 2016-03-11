@@ -1,5 +1,6 @@
 package rendering;
 import java.awt.Color;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,18 +11,21 @@ public class Raycaster {
 	ArrayList<ArrayList<Double>> columns;
 	ArrayList<ArrayList<Double>> heights;
 	ArrayList<ArrayList<Color>> colors;
+	ArrayList<ArrayList<Point>> mapPoints;
 	
 	public Raycaster(Game game){
 		this.currentGame = game;
 		columns = new ArrayList<ArrayList<Double>>();
 		heights = new ArrayList<ArrayList<Double>>();
 		colors = new ArrayList<ArrayList<Color>>();
+		mapPoints = new ArrayList<ArrayList<Point>>();
 	}
 	public void cast(){
 		int screenWidth = currentGame.getScreen().getWidth();
 		columns.clear();
 		colors.clear();
 		heights.clear();
+		mapPoints.clear();
 		double FOV = currentGame.getCamera().getFOV();
 		double playerAngle = currentGame.getCamera().getAngle();
 		double startingAngle = playerAngle + FOV/2;
@@ -69,6 +73,7 @@ public class Raycaster {
     		ArrayList<Double> allHits = new ArrayList<Double>();
     		ArrayList<Double> allHeights = new ArrayList<Double>();
     		ArrayList<Color> allColors = new ArrayList<Color>();
+    		ArrayList<Point> allPoints = new ArrayList<Point>();
     		double checkingDistance;
     		double checkingHeight;
     		Color checkingColor;
@@ -87,15 +92,6 @@ public class Raycaster {
                     hit = true;
                 }
                 else {
-                	if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
-                		checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
-                		checkingColor = currentGame.getWorld().getColorAt(checkX, checkY);
-                		checkingHeight = currentGame.getWorld().getHeightAt(checkX, checkY);
-                		int index = insertAllHits(checkingDistance, allHits);
-	                    allHits.add(index, checkingDistance);
-	                    allColors.add(index, checkingColor);
-	                    allHeights.add(index, checkingHeight);
-                	}
                 	if(currentGame.getWorld().getColorAt(checkX, checkY + insideCheckY).getRGB() != Color.WHITE.getRGB()){
 	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    checkingColor = currentGame.getWorld().getColorAt(checkX, checkY + insideCheckY);
@@ -104,7 +100,18 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
+	                    allPoints.add(new Point((int) checkX, (int) (checkY + insideCheckY)));
                 		
+                	}
+                	if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
+                		checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+                		checkingColor = currentGame.getWorld().getColorAt(checkX, checkY);
+                		checkingHeight = currentGame.getWorld().getHeightAt(checkX, checkY);
+                		int index = insertAllHits(checkingDistance, allHits);
+	                    allHits.add(index, checkingDistance);
+	                    allColors.add(index, checkingColor);
+	                    allHeights.add(index, checkingHeight);
+	                    allPoints.add(new Point((int) checkX, (int) checkY));
                 	}
                 }
 
@@ -151,15 +158,6 @@ public class Raycaster {
                     hit = true;
                 }
                 else{
-	                if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
-	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
-	                    checkingColor = currentGame.getWorld().getColorAt(checkX, checkY);
-	                    checkingHeight = currentGame.getWorld().getHeightAt(checkX, checkY);
-	                    int index = insertAllHits(checkingDistance, allHits);
-	                    allHits.add(index, checkingDistance);
-	                    allColors.add(index, checkingColor);
-	                    allHeights.add(index, checkingHeight);
-	                }
 	            	if(currentGame.getWorld().getColorAt(checkX + insideCheckX, checkY).getRGB() != Color.WHITE.getRGB()){
 	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    checkingColor = currentGame.getWorld().getColorAt(checkX + insideCheckX, checkY);
@@ -168,8 +166,19 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
+	                    allPoints.add(new Point((int) (checkX + insideCheckX), (int) checkY));
 	            		
 	            	}
+	                if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
+	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+	                    checkingColor = currentGame.getWorld().getColorAt(checkX, checkY);
+	                    checkingHeight = currentGame.getWorld().getHeightAt(checkX, checkY);
+	                    int index = insertAllHits(checkingDistance, allHits);
+	                    allHits.add(index, checkingDistance);
+	                    allColors.add(index, checkingColor);
+	                    allHeights.add(index, checkingHeight);
+	                    allPoints.add(new Point((int) checkX, (int) checkY));
+	                }
                 }
                 currentX += deltaX;
                 currentY += deltaY;
@@ -179,15 +188,21 @@ public class Raycaster {
 	        	columns.add(allHits);
 	        	heights.add(allHeights);
 	        	colors.add(allColors);
+	        	mapPoints.add(allPoints);
+	        	//System.out.println(i + " = " + allPoints);
+	        	//System.out.println(allPoints);
 	        }
-	        else {
+	        else { //adding dummy values to the lists if empty
 	        	ArrayList<Double> NaNList = new ArrayList<Double>();
 	        	NaNList.add(Double.NaN);
 	        	ArrayList<Color> whiteList = new ArrayList<Color>();
 	        	whiteList.add(Color.WHITE);
+	        	ArrayList<Point> pointLess = new ArrayList<Point>();
+	        	pointLess.add(new Point(0,0));
 	        	columns.add(NaNList);
 	        	heights.add(NaNList);
 	        	colors.add(whiteList);
+	        	mapPoints.add(pointLess);
 	        }
 	        	
 	        
@@ -199,7 +214,18 @@ public class Raycaster {
 			return columns.get(col);
 		}
 		catch(Exception e){
-			System.out.println("Tried to paint too early... trying again.");
+			System.out.println("Tried to paint too early... no getColumn available.");
+			return null;
+		}
+	}
+	
+	public ArrayList<Point> getPointOfColumn(int col){ //returns what map point a column was casted from
+
+		try{
+			return mapPoints.get(col);
+		}
+		catch(Exception e){
+			System.out.println("Tried to paint too early... no getPointOfColumn available.");
 			return null;
 		}
 	}
@@ -228,7 +254,7 @@ public class Raycaster {
 			return colors.get(col);
 		}
 		catch(Exception e){
-			System.out.println("Tried to paint too early... trying again.");
+			System.out.println("Tried to paint too early... no getColor available.");
 			return null;
 		}
 	}
@@ -237,7 +263,7 @@ public class Raycaster {
 			return heights.get(col);
 		}
 		catch(Exception e){
-			System.out.println("Tried to paint too early... trying again.");
+			System.out.println("Tried to paint too early... no getHeights available.");
 			return null;
 		}
 }
