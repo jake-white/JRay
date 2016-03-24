@@ -3,7 +3,7 @@ package game;
 import rendering.RayPoint;
 
 public class Player {
-	double height = 0, angle = 0;
+	double height = 0, angle = Math.PI;
 	double accelX = 0, accelY = 0;
 	RayPoint position;
 	

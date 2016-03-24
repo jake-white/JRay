@@ -11,7 +11,7 @@ import game.Game;
 public class World {
 	BufferedImage worldImg;
 	Color[][] map;
-	double[][] heightMap;
+	double[][] heightMap, gapMap;
 	Color playerInsertion;
 	Game currentGame;
 	int width, height;
@@ -33,6 +33,7 @@ public class World {
 		this.height = worldImg.getHeight();
 		map = new Color[width][height];
 		heightMap = new double[width][height];
+		gapMap =  new double[width][height];
 		Color emptySpace = new Color(255, 255, 255);
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
@@ -45,13 +46,22 @@ public class World {
 				}
 				else{
 					if(testingColor.getRGB() == Color.GRAY.getRGB())
-						heightMap[x][y] = .1;
-					else if(testingColor.getRGB() == Color.BLUE.getRGB())
+					{
+						heightMap[x][y] = 2;
+						gapMap[x][y] = 1;
+					}
+					else if(testingColor.getRGB() == Color.BLUE.getRGB()){
 						heightMap[x][y] = 3;
-					else if(testingColor.getRGB() == Color.MAGENTA.getRGB())
+						gapMap[x][y] = 0;
+					}
+					else if(testingColor.getRGB() == Color.MAGENTA.getRGB()){
 						heightMap[x][y] = 1;
-					else
+						gapMap[x][y] = 0;
+					}
+					else {						
 						heightMap[x][y] = 1;
+						gapMap[x][y] = 0;
+					}
 					map[x][y] = testingColor;
 				}
 			}
@@ -64,6 +74,9 @@ public class World {
 	
 	public double getHeightAt(double x, double y){
 		return heightMap[(int) x][(int) y];
+	}
+	public double getGapAt(double x, double y){
+		return gapMap[(int) x][(int) y];
 	}
 	public int getWidth(){
 		return width;

@@ -1,5 +1,6 @@
 package rendering;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -51,26 +52,27 @@ public class Screen extends JPanel{
 		Point beforeLastMap = new Point(0,0);
 		
 		try {
-			for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){
+			/* Painting the screen from raycasting data for this frame
+			 * Given: two arraylists. One of heights, one of points
+			 */
+			for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){ //iterating through each column
 				ArrayList<Double> distanceList = render.getColumn(i);
-				ArrayList<Color> colorList = render.getColor(i);
-				ArrayList<Double> columnLengths = render.getHeights(i);
 				ArrayList<Point> columnPoints = render.getPointOfColumn(i);
 				for(int j = 0; j < distanceList.size(); j++){
-					if(colorList.get(j).getRGB() != Color.WHITE.getRGB()){
-						int actualHeight = this.getHeight();
+					Point currentMap = columnPoints.get(j);
+					Color thisColor = currentGame.getWorld().getColorAt(currentMap.getX(), currentMap.getY());
+					double thisHeight = currentGame.getWorld().getHeightAt(currentMap.getX(), currentMap.getY());
+					double thisGap = currentGame.getWorld().getGapAt(currentMap.getX(), currentMap.getY());
+					if(thisColor.getRGB() != Color.WHITE.getRGB()){
 						double columnHeight = this.getHeight()/distanceList.get(j);
-					//	if(colorList.size() != columnPoints.size())
-					//		System.out.println(colorList.size() + " vs " + columnPoints.size() + ", yet we maybe had trouble at element " + j);
-						Color thisColor = colorList.get(j);
-						Point currentMap = columnPoints.get(j);
 						g2d.setColor(thisColor);
-						double heightAdjustment = columnHeight*(columnLengths.get(j)-1);
+						double heightAdjustment = columnHeight*thisHeight;
+						double gapAdjustment = columnHeight*thisGap;
+						double startingHeight = heightAdjustment + gapAdjustment;
 						double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
-								(columnHeight)*playerHeight - heightAdjustment);
+								(columnHeight)*playerHeight - startingHeight);
 						double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
 						if(lastMap.equals(currentMap)){
-						//	System.out.println(lastMap + " vs " + currentMap);
 							g2d.drawLine(i,  (int) Math.round(lastTopPoint), i, (int) Math.round(secondPoint));
 						}
 						g2d.setColor(Color.BLACK);
@@ -82,19 +84,18 @@ public class Screen extends JPanel{
 						beforeLastTopPoint = lastTopPoint;
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
-						//System.out.println(beforeLastMap + " " + lastMap + " " + currentMap);
 					}
 				}
 			}
 		}
 		catch(Exception e){
-		//	e.printStackTrace();
-		//	System.out.println("Something went wrong trying to paint to the screen.");
+			System.out.println("Something went wrong trying to paint to the screen, but we caught it.");
 		}
 	//	g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
+		g2d.setFont(new Font(null).deriveFont(20f));
 		g2d.setColor(Color.RED);
-		g2d.drawString("FPS: " + frameRate, 0, 10);
-		g2d.drawString("Player: " + currentGame.getPlayer().toString(), 0, 20);
+		g2d.drawString("FPS: " + frameRate, 0, 20);
+		g2d.drawString("Player: " + currentGame.getPlayer().toString(), 0, 40);
 	}
 	
 	public void rayCast(){
