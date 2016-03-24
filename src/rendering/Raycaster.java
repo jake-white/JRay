@@ -100,7 +100,7 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
-	                    allPoints.add(new Point((int) checkX, (int) (checkY + insideCheckY)));
+	                    allPoints.add(index, new Point((int) checkX, (int) (checkY + insideCheckY)));
                 		
                 	}
                 	if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
@@ -111,7 +111,7 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
-	                    allPoints.add(new Point((int) checkX, (int) checkY));
+	                    allPoints.add(index, new Point((int) checkX, (int) checkY));
                 	}
                 }
 
@@ -166,7 +166,7 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
-	                    allPoints.add(new Point((int) (checkX + insideCheckX), (int) checkY));
+	                    allPoints.add(index, new Point((int) (checkX + insideCheckX), (int) checkY));
 	            		
 	            	}
 	                if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
@@ -177,7 +177,7 @@ public class Raycaster {
 	                    allHits.add(index, checkingDistance);
 	                    allColors.add(index, checkingColor);
 	                    allHeights.add(index, checkingHeight);
-	                    allPoints.add(new Point((int) checkX, (int) checkY));
+	                    allPoints.add(index, new Point((int) checkX, (int) checkY));
 	                }
                 }
                 currentX += deltaX;

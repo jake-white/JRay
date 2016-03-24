@@ -69,29 +69,18 @@ public class Screen extends JPanel{
 						double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
 								(columnHeight)*playerHeight - heightAdjustment);
 						double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
-						//System.out.println(currentMap + " vs " + lastMap);
-						if(lastTopPoint != -1 && lastTopPoint <= firstPoint && currentMap.equals(lastMap)){
+						if(lastMap.equals(currentMap)){
+						//	System.out.println(lastMap + " vs " + currentMap);
 							g2d.drawLine(i,  (int) Math.round(lastTopPoint), i, (int) Math.round(secondPoint));
-							g2d.setColor(Color.BLACK);
-							g2d.drawLine(i,  (int) Math.round(lastTopPoint - 1), i, (int) Math.round(lastTopPoint));
 						}
-						else if(beforeLastTopPoint != -1 && beforeLastTopPoint <= firstPoint  && currentMap.equals(beforeLastMap)){
-							g2d.drawLine(i,  (int) Math.round(beforeLastTopPoint), i, (int) Math.round(secondPoint));
-							g2d.setColor(Color.BLACK);
-							g2d.drawLine(i,  (int) Math.round(beforeLastTopPoint - 1), i, (int) Math.round(beforeLastTopPoint));
-						}
-						else{
-							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
-							g2d.setColor(Color.BLACK);
-							g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
-						}
+						g2d.setColor(Color.BLACK);
+						g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
+						g2d.setColor(thisColor);
+						g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
 						g2d.setColor(Color.BLACK);
 						g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
 						beforeLastTopPoint = lastTopPoint;
 						lastTopPoint = (int) Math.round(firstPoint);
-						beforeLastHeight = lastHeight;
-						lastHeight = actualHeight;
-						beforeLastMap = lastMap;
 						lastMap = currentMap;
 						//System.out.println(beforeLastMap + " " + lastMap + " " + currentMap);
 					}
