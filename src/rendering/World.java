@@ -1,5 +1,6 @@
 package rendering;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +11,7 @@ import game.Game;
 
 public class World {
 	BufferedImage worldImg;
-	Color[][] map;
-	double[][] heightMap, gapMap;
+	Tile[][] tileSet;
 	Color playerInsertion;
 	Game currentGame;
 	int width, height;
@@ -31,52 +31,49 @@ public class World {
 	private void parseMap() { //reads through the image for each pixel
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
-		map = new Color[width][height];
-		heightMap = new double[width][height];
-		gapMap =  new double[width][height];
+		tileSet = new Tile[width][height];
 		Color emptySpace = new Color(255, 255, 255);
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
-				Color testingColor = new Color(worldImg.getRGB(x, y));
-				if(testingColor.getRGB() == playerInsertion.getRGB()){
-					//found the player square, inserting player!
+				double tileHeight, tileGap;
+				Color colorAtCoord = new Color(worldImg.getRGB(x, y));
+				if(colorAtCoord.equals(playerInsertion)){ //found the player square, inserting player!
 					System.out.println("player found at " + y + ", " + x);
 					currentGame.getPlayer().setPosition(x, y);
-					map[x][y] = emptySpace;
+					tileSet[x][y] = new Tile(TileType.PLAYER);
+				}
+				else if(colorAtCoord.equals(emptySpace)){ //if it's an empty tile
+					
+					tileSet[x][y] = new Tile(TileType.EMPTY);
 				}
 				else{
-					if(testingColor.getRGB() == Color.GRAY.getRGB())
-					{
-						heightMap[x][y] = 2;
-						gapMap[x][y] = 1;
+					if(colorAtCoord.equals(Color.GRAY)){
+						tileHeight = 0.001;
+						tileGap = 1;
 					}
-					else if(testingColor.getRGB() == Color.BLUE.getRGB()){
-						heightMap[x][y] = 3;
-						gapMap[x][y] = 0;
+					else if(colorAtCoord.equals(Color.BLUE)){
+						tileHeight = 3;
+						tileGap = 0;
 					}
-					else if(testingColor.getRGB() == Color.MAGENTA.getRGB()){
-						heightMap[x][y] = 1;
-						gapMap[x][y] = 0;
+					else if(colorAtCoord.equals(Color.MAGENTA)){
+						tileHeight = 2;
+						tileGap = 0;
 					}
-					else {						
-						heightMap[x][y] = 1;
-						gapMap[x][y] = 0;
+					else {
+						tileHeight = 2;
+						tileGap = 0;
 					}
-					map[x][y] = testingColor;
+					tileSet[x][y] = new Tile(colorAtCoord, tileHeight, tileGap);
 				}
 			}
 		}
 	}
-	
-	public Color getColorAt(double x, double y){
-		return map[(int)x][(int)y];
+	public Tile getTileAt(double x, double y){
+		return tileSet[(int)x][(int)y];
 	}
 	
-	public double getHeightAt(double x, double y){
-		return heightMap[(int) x][(int) y];
-	}
-	public double getGapAt(double x, double y){
-		return gapMap[(int) x][(int) y];
+	public Tile getTileAt(Point p){
+		return tileSet[(int) p.getX()][(int) p.getY()];
 	}
 	public int getWidth(){
 		return width;

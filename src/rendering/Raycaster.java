@@ -67,7 +67,6 @@ public class Raycaster {
     		ArrayList<Double> allHits = new ArrayList<Double>();
     		ArrayList<Point> allPoints = new ArrayList<Point>();
     		double checkingDistance;
-            
             while(!hit){
                 checkX = currentX;
                 if(posDirY){
@@ -82,14 +81,14 @@ public class Raycaster {
                     hit = true;
                 }
                 else {
-                	if(currentGame.getWorld().getColorAt(checkX, checkY + insideCheckY).getRGB() != Color.WHITE.getRGB()){
+                	if(!currentGame.getWorld().getTileAt(checkX, checkY + insideCheckY).getColor().equals(Color.WHITE)){
 	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    int index = insertAllHits(checkingDistance, allHits);
 	                    allHits.add(index, checkingDistance);
 	                    allPoints.add(index, new Point((int) checkX, (int) (checkY + insideCheckY)));
                 		
                 	}
-                	if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
+                	if(!currentGame.getWorld().getTileAt(checkX, checkY).getColor().equals(Color.WHITE)){
                 		checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
                 		int index = insertAllHits(checkingDistance, allHits);
 	                    allHits.add(index, checkingDistance);
@@ -140,14 +139,14 @@ public class Raycaster {
                     hit = true;
                 }
                 else{
-	            	if(currentGame.getWorld().getColorAt(checkX + insideCheckX, checkY).getRGB() != Color.WHITE.getRGB()){
+	            	if(!currentGame.getWorld().getTileAt(checkX + insideCheckX, checkY).getColor().equals(Color.WHITE)){
 	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    int index = insertAllHits(checkingDistance, allHits);
 	                    allHits.add(index, checkingDistance);
 	                    allPoints.add(index, new Point((int) (checkX + insideCheckX), (int) checkY));
 	            		
 	            	}
-	                if(currentGame.getWorld().getColorAt(checkX, checkY).getRGB() != Color.WHITE.getRGB()){
+	                if(!currentGame.getWorld().getTileAt(checkX, checkY).getColor().equals(Color.WHITE)){
 	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    int index = insertAllHits(checkingDistance, allHits);
 	                    allHits.add(index, checkingDistance);
@@ -157,7 +156,9 @@ public class Raycaster {
                 currentX += deltaX;
                 currentY += deltaY;
             }
-            
+
+            allHits.add(0.0);
+            allPoints.add(new Point((int) playerPoint.getX(), (int) playerPoint.getY()));
 	        if(!allHits.isEmpty()) {
 	        	columns.add(allHits);
 	        	mapPoints.add(allPoints);

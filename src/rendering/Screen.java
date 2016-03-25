@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +30,12 @@ public class Screen extends JPanel{
 	public void paintComponent(Graphics g){
 		//Overriding the JPanel painting
 		Graphics2D g2d = (Graphics2D) g;
-		double playerHeight = currentGame.getPlayer().getHeight();
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+		          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+		          RenderingHints.VALUE_RENDER_QUALITY);
+		
+		double cameraHeight = currentGame.getCamera().getHeight();
 		g2d.setColor(Color.CYAN);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
 		g2d.setColor(Color.GREEN);
@@ -46,10 +52,8 @@ public class Screen extends JPanel{
 		}
 		int lastTopPoint = -1;
 		int beforeLastTopPoint = -1;
-		int lastHeight = -1;
-		int beforeLastHeight = -1;
 		Point lastMap = new Point(0,0);
-		Point beforeLastMap = new Point(0,0);
+		Tile lastTile = new Tile(TileType.EMPTY);
 		
 		try {
 			/* Painting the screen from raycasting data for this frame
@@ -59,36 +63,55 @@ public class Screen extends JPanel{
 				ArrayList<Double> distanceList = render.getColumn(i);
 				ArrayList<Point> columnPoints = render.getPointOfColumn(i);
 				for(int j = 0; j < distanceList.size(); j++){
+					//grabbing information about the current column/tile
 					Point currentMap = columnPoints.get(j);
-					Color thisColor = currentGame.getWorld().getColorAt(currentMap.getX(), currentMap.getY());
-					double thisHeight = currentGame.getWorld().getHeightAt(currentMap.getX(), currentMap.getY());
-					double thisGap = currentGame.getWorld().getGapAt(currentMap.getX(), currentMap.getY());
-					if(thisColor.getRGB() != Color.WHITE.getRGB()){
-						double columnHeight = this.getHeight()/distanceList.get(j);
+					Tile currentTile = currentGame.getWorld().getTileAt(currentMap);
+					Color thisColor = currentTile.getColor();
+					double thisHeight = currentTile.getHeight();
+					double thisGap = currentTile.getGap();
+					if(!thisColor.equals(Color.WHITE)){
+						double columnHeight = -1;
+						if(distanceList.get(j) > 0){
+							columnHeight = this.getHeight()/distanceList.get(j);
+						}
 						g2d.setColor(thisColor);
-						double heightAdjustment = columnHeight*thisHeight;
-						double gapAdjustment = columnHeight*thisGap;
-						double startingHeight = heightAdjustment + gapAdjustment;
-						double firstPoint = Math.floor((this.getHeight()/2 - columnHeight/2) + 
-								(columnHeight)*playerHeight - startingHeight);
-						double secondPoint = Math.floor(firstPoint + columnHeight + heightAdjustment);
-						if(lastMap.equals(currentMap)){
+						double castedHeight = columnHeight;
+						columnHeight*=thisHeight;
+						Color adjustedColor = transformColor(thisColor, castedHeight);
+						double gapAdjustment = castedHeight*thisGap;
+						//calculating first and last points of the column
+							double firstPoint = 0;
+							double secondPoint = 0;
+						if(cameraHeight > thisGap){
+							firstPoint = this.getHeight();
+							secondPoint = this.getHeight();
+						}
+						g2d.setColor(adjustedColor);
+						if(columnHeight > 0){
+							firstPoint = Math.floor(this.getHeight()/2 - columnHeight - gapAdjustment + castedHeight*cameraHeight);
+							secondPoint = Math.floor(firstPoint + columnHeight);
+						}
+						if(lastMap.equals(currentMap)){ //checking it a top should be drawn for a block
 							g2d.drawLine(i,  (int) Math.round(lastTopPoint), i, (int) Math.round(secondPoint));
 						}
-						g2d.setColor(Color.BLACK);
-						g2d.drawLine(i,  (int) Math.round(firstPoint - 1), i, (int) Math.round(firstPoint));
-						g2d.setColor(thisColor);
-						g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
-						g2d.setColor(Color.BLACK);
-						g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
+						if(columnHeight > 0){
+							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
+						}
+						if(currentTile.getType() != TileType.CEILING){
+							g2d.setColor(Color.BLACK);
+							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(firstPoint+2));
+							g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
+						}
 						beforeLastTopPoint = lastTopPoint;
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
+						lastTile = currentTile;
 					}
 				}
 			}
 		}
 		catch(Exception e){
+			//e.printStackTrace();
 			System.out.println("Something went wrong trying to paint to the screen, but we caught it.");
 		}
 	//	g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
@@ -100,6 +123,28 @@ public class Screen extends JPanel{
 	
 	public void rayCast(){
 		render.cast();
+	}
+	
+	public Color transformColor(Color original, double distance){
+		if(distance > 0){
+		double intensity = 1 - 5/distance;
+		//System.out.println(intensity);
+		if(intensity > 1)
+			intensity = 1;
+		
+		int red = (int) (original.getRed()*intensity);
+		int blue = (int) (original.getBlue()*intensity);
+		int green = (int) (original.getGreen()*intensity);
+		if(red > 255)
+			red = 255;
+		if(blue > 255)
+			blue = 255;
+		if(green > 255)
+			green = 255;
+		return new Color(red, green, blue);
+		}
+		else
+			return original;
 	}
 	
 	public void setFrameRate(double frames){

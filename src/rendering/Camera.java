@@ -17,5 +17,8 @@ public class Camera {
 	public double getFOV(){
 		return FOV;
 	}
+	public double getHeight(){
+		return player.getHeight() + 0.8;
+	}
 
 }
