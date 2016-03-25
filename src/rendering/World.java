@@ -60,7 +60,7 @@ public class World {
 						tileGap = 0;
 					}
 					else {
-						tileHeight = 2;
+						tileHeight = 1;
 						tileGap = 0;
 					}
 					tileSet[x][y] = new Tile(colorAtCoord, tileHeight, tileGap);

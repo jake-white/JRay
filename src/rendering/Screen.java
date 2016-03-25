@@ -19,6 +19,7 @@ public class Screen extends JPanel{
 	Game currentGame;
 	Raycaster render;
 	double frameRate;
+	int resX = 480, resY = 270;
 	
 	public Screen(Game game){
 		super();
@@ -36,9 +37,9 @@ public class Screen extends JPanel{
 		          RenderingHints.VALUE_RENDER_QUALITY);
 		
 		double cameraHeight = currentGame.getCamera().getHeight();
-		g2d.setColor(Color.CYAN);
+		g2d.setColor(Color.BLACK.brighter());
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
-		g2d.setColor(Color.GREEN);
+		g2d.setColor(Color.GREEN.darker());
 		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
 		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
@@ -51,7 +52,7 @@ public class Screen extends JPanel{
 			e.printStackTrace();
 		}
 		int lastTopPoint = -1;
-		int beforeLastTopPoint = -1;
+		int lastXValue = 0;
 		Point lastMap = new Point(0,0);
 		Tile lastTile = new Tile(TileType.EMPTY);
 		
@@ -59,7 +60,9 @@ public class Screen extends JPanel{
 			/* Painting the screen from raycasting data for this frame
 			 * Given: two arraylists. One of heights, one of points
 			 */
-			for(int i = 0; i < currentGame.getScreen().getWidth(); ++i){ //iterating through each column
+			double increment = (double) this.getWidth()/this.getResolutionX();
+			for(int i = 0; i < this.getResolutionX(); i++){ //iterating through each column
+				double dX = increment+1;
 				ArrayList<Double> distanceList = render.getColumn(i);
 				ArrayList<Point> columnPoints = render.getPointOfColumn(i);
 				for(int j = 0; j < distanceList.size(); j++){
@@ -79,35 +82,42 @@ public class Screen extends JPanel{
 						columnHeight*=thisHeight;
 						Color adjustedColor = transformColor(thisColor, castedHeight);
 						double gapAdjustment = castedHeight*thisGap;
-						//calculating first and last points of the column
+						//calculating first and last points of the columns
 							double firstPoint = 0;
-							double secondPoint = 0;
+							double length = 0;
 						if(cameraHeight > thisGap){
 							firstPoint = this.getHeight();
-							secondPoint = this.getHeight();
+							length = 0;
 						}
 						g2d.setColor(adjustedColor);
 						if(columnHeight > 0){
 							firstPoint = Math.floor(this.getHeight()/2 - columnHeight - gapAdjustment + castedHeight*cameraHeight);
-							secondPoint = Math.floor(firstPoint + columnHeight);
+							length = columnHeight;
 						}
+						if(length > 1000)
+							System.out.println(castedHeight);
 						if(lastMap.equals(currentMap)){ //checking it a top should be drawn for a block
-							g2d.drawLine(i,  (int) Math.round(lastTopPoint), i, (int) Math.round(secondPoint));
+							if(lastTopPoint < firstPoint+length){
+								g2d.fillRect(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) Math.round(firstPoint+length-lastTopPoint));
+							}
+							else{
+								g2d.fillRect(lastXValue,  (int) Math.round(firstPoint+length), (int) dX, (int) Math.round(lastTopPoint - (firstPoint + length)));
+							}
 						}
 						if(columnHeight > 0){
-							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(secondPoint));
+							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint), (int) dX, (int) Math.round(length+1));
 						}
 						if(currentTile.getType() != TileType.CEILING){
 							g2d.setColor(Color.BLACK);
-							g2d.drawLine(i,  (int) Math.round(firstPoint), i, (int) Math.round(firstPoint+2));
-							g2d.drawLine(i,  (int) Math.round(secondPoint - 1), i, (int) Math.round(secondPoint));
+							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint), (int) dX, 2);
+							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint + length), (int) dX, 1);
 						}
-						beforeLastTopPoint = lastTopPoint;
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
 						lastTile = currentTile;
 					}
 				}
+				lastXValue+= dX;
 			}
 		}
 		catch(Exception e){
@@ -127,10 +137,12 @@ public class Screen extends JPanel{
 	
 	public Color transformColor(Color original, double distance){
 		if(distance > 0){
-		double intensity = 1 - 5/distance;
+		double intensity = 1 - 20/distance;
 		//System.out.println(intensity);
 		if(intensity > 1)
 			intensity = 1;
+		else if(intensity < 0)
+			intensity = 0;
 		
 		int red = (int) (original.getRed()*intensity);
 		int blue = (int) (original.getBlue()*intensity);
@@ -149,5 +161,13 @@ public class Screen extends JPanel{
 	
 	public void setFrameRate(double frames){
 		this.frameRate = frames;
+	}
+	
+	public int getResolutionX(){
+		return resX;
+	}
+	
+	public int getResolutionY(){
+		return resY;
 	}
 }
