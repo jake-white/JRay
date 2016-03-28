@@ -1,4 +1,5 @@
 package game;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
@@ -37,7 +38,7 @@ public class Game {
 		mainFrame.setVisible(true);
 		mainFrame.addKeyListener(input);
 		mainFrame.setTitle("JRay");
-		world = new World(this, "world.png");
+		world = new World(this, "world.bmp");
 		System.out.println("Started game!");
 		currentScreen.rayCast();
 		gameLoop = new Timer(1, new Tick(this));

@@ -26,11 +26,11 @@ public class Screen extends JPanel{
 		super();
 		this.currentGame = game;
 		this.render = new Raycaster(game);
-		lightSource = new Point(5,5);
 	}
 	
 	@Override
 	public void paintComponent(Graphics g){
+		//System.out.println(lightSource);
 		//Overriding the JPanel painting
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -39,9 +39,9 @@ public class Screen extends JPanel{
 		          RenderingHints.VALUE_RENDER_QUALITY);
 		
 		double cameraHeight = currentGame.getCamera().getHeight();
-		g2d.setColor(Color.CYAN);
+		g2d.setColor(Color.BLACK.brighter());
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
-		g2d.setColor(Color.GREEN.darker());
+		g2d.setColor(new Color(64, 64, 64));
 		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
 		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
@@ -59,6 +59,7 @@ public class Screen extends JPanel{
 		Tile lastTile = new Tile(TileType.EMPTY);
 		
 		try {
+			lightSource = this.currentGame.getWorld().getLightSource();
 			/* Painting the screen from raycasting data for this frame
 			 * Given: two arraylists. One of heights, one of points
 			 */
@@ -95,8 +96,6 @@ public class Screen extends JPanel{
 							firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight));
 							length = castedHeight*thisHeight;
 						}
-						if(length > 1000)
-							System.out.println(castedHeight);
 						if(lastMap.equals(currentMap)){ //checking it a top should be drawn for a block
 							if(lastTopPoint < firstPoint+length){
 								g2d.fillRect(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) Math.round(firstPoint+length-lastTopPoint));
@@ -138,12 +137,12 @@ public class Screen extends JPanel{
 	
 	public Color transformColor(Color original, double distance){
 		if(distance > 0){
-		double intensity = 1 - 20/distance;
+		double intensity = 1 - distance/15;
 		//System.out.println(intensity);
 		if(intensity > 1)
 			intensity = 1;
-		else if(intensity < 0)
-			intensity = 0;
+		else if(intensity < 0.3)
+			intensity = 0.3;
 		
 		int red = (int) (original.getRed()*intensity);
 		int blue = (int) (original.getBlue()*intensity);
