@@ -19,12 +19,14 @@ public class Screen extends JPanel{
 	Game currentGame;
 	Raycaster render;
 	double frameRate;
-	int resX = 480, resY = 270;
+	int resX = 200, resY = 270;
+	Point lightSource;
 	
 	public Screen(Game game){
 		super();
 		this.currentGame = game;
 		this.render = new Raycaster(game);
+		lightSource = new Point(5,5);
 	}
 	
 	@Override
@@ -37,7 +39,7 @@ public class Screen extends JPanel{
 		          RenderingHints.VALUE_RENDER_QUALITY);
 		
 		double cameraHeight = currentGame.getCamera().getHeight();
-		g2d.setColor(Color.BLACK.brighter());
+		g2d.setColor(Color.CYAN);
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
 		g2d.setColor(Color.GREEN.darker());
 		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
@@ -79,8 +81,7 @@ public class Screen extends JPanel{
 						}
 						g2d.setColor(thisColor);
 						double castedHeight = columnHeight;
-						columnHeight*=thisHeight;
-						Color adjustedColor = transformColor(thisColor, castedHeight);
+						Color adjustedColor = transformColor(thisColor, RayPoint.distanceTo(currentMap.getX(), currentMap.getY(), lightSource.getX(), lightSource.getY()));
 						double gapAdjustment = castedHeight*thisGap;
 						//calculating first and last points of the columns
 							double firstPoint = 0;
@@ -91,8 +92,8 @@ public class Screen extends JPanel{
 						}
 						g2d.setColor(adjustedColor);
 						if(columnHeight > 0){
-							firstPoint = Math.floor(this.getHeight()/2 - columnHeight - gapAdjustment + castedHeight*cameraHeight);
-							length = columnHeight;
+							firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight));
+							length = castedHeight*thisHeight;
 						}
 						if(length > 1000)
 							System.out.println(castedHeight);

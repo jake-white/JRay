@@ -2,7 +2,6 @@ package rendering;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import game.Game;
 
@@ -82,7 +81,7 @@ public class Raycaster {
                 }
                 else {
                 	if(!currentGame.getWorld().getTileAt(checkX, checkY + insideCheckY).getColor().equals(Color.WHITE)){
-	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+	                    checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    if(checkingDistance < 0.00001) //super arbitrary. please don't hate me, hate floating point numbers
 	                    	checkingDistance = 0;
 	                    int index = insertAllHits(checkingDistance, allHits);
@@ -91,7 +90,7 @@ public class Raycaster {
                 		
                 	}
                 	if(!currentGame.getWorld().getTileAt(checkX, checkY).getColor().equals(Color.WHITE)){
-                		checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+                		checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    if(checkingDistance < 0.00001) //super arbitrary. please don't hate me, hate floating point numbers
 	                    	checkingDistance = 0;
                 		int index = insertAllHits(checkingDistance, allHits);
@@ -144,7 +143,7 @@ public class Raycaster {
                 }
                 else{
 	            	if(!currentGame.getWorld().getTileAt(checkX + insideCheckX, checkY).getColor().equals(Color.WHITE)){
-	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+	                    checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    if(checkingDistance < 0.00001) //super arbitrary. please don't hate me, hate floating point numbers
 	                    	checkingDistance = 0;
 	                    int index = insertAllHits(checkingDistance, allHits);
@@ -153,7 +152,7 @@ public class Raycaster {
 	            		
 	            	}
 	                if(!currentGame.getWorld().getTileAt(checkX, checkY).getColor().equals(Color.WHITE)){
-	                    checkingDistance = distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+	                    checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
 	                    if(checkingDistance < 0.00001) //super arbitrary. please don't hate me, hate floating point numbers
 	                    	checkingDistance = 0;
 	                    int index = insertAllHits(checkingDistance, allHits);
@@ -226,7 +225,4 @@ public class Raycaster {
 	    return allHits.size();
 	}
 	
-    public double distanceTo(double x1, double y1, double  x2, double y2){
-        return Math.sqrt(Math.pow(y1 - y2, 2) + Math.pow(x1 - x2, 2));
-    }
 }

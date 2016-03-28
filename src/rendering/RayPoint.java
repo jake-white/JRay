@@ -35,6 +35,11 @@ public class RayPoint extends Point2D.Double{
 	    return angle;
 	}
 	
+
+    public static double distanceTo(double x1, double y1, double  x2, double y2){
+        return Math.sqrt(Math.pow(y1 - y2, 2) + Math.pow(x1 - x2, 2));
+    }
+	
 	@Override
 	public String toString(){
 		return "("+this.x+", "+this.y+")";
