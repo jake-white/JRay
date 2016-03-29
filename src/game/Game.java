@@ -38,7 +38,7 @@ public class Game {
 		mainFrame.setVisible(true);
 		mainFrame.addKeyListener(input);
 		mainFrame.setTitle("JRay");
-		world = new World(this, "world.bmp");
+		world = new World(this, "world.png");
 		System.out.println("Started game!");
 		currentScreen.rayCast();
 		gameLoop = new Timer(1, new Tick(this));
@@ -69,7 +69,7 @@ public class Game {
 	
 	public void parseInput(Player p){
 		double walk_speed = 0.05;
-		double turn_speed = 0.07;
+		double turn_speed = 0.02;
 		double fly_speed = 0.04;
 		if(input.input(KeyEvent.VK_W)){
 			p.walk(walk_speed);

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,7 @@ import game.Game;
 public class World {
 	BufferedImage worldImg;
 	Tile[][] tileSet;
+	double[][] configMap;
 	Color playerInsertion;
 	Point light;
 	Game currentGame;
@@ -37,11 +39,11 @@ public class World {
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
 		tileSet = new Tile[width][height];
-		Color emptySpace = new Color(255, 255, 255);
+		Color emptySpace = new Color(255, 255, 255, 0); //png transparent whitespace
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
 				double tileHeight, tileGap;
-				Color colorAtCoord = new Color(worldImg.getRGB(x, y));
+				Color colorAtCoord = new Color(worldImg.getRGB(x, y), true);
 				if(colorAtCoord.equals(playerInsertion)){ //found the player square, inserting player!
 					System.out.println("player found at " + y + ", " + x);
 					playerFound = true;
@@ -58,23 +60,7 @@ public class World {
 					light = new Point(x, y);
 				}
 				else{
-					if(colorAtCoord.equals(Color.GRAY)){
-						tileHeight = 0.001;
-						tileGap = 1;
-					}
-					else if(colorAtCoord.equals(Color.BLUE)){
-						tileHeight = 3;
-						tileGap = 0;
-					}
-					else if(colorAtCoord.equals(Color.MAGENTA)){
-						tileHeight = 2;
-						tileGap = 0;
-					}
-					else {
-						tileHeight = 1;
-						tileGap = 0;
-					}
-					tileSet[x][y] = new Tile(colorAtCoord, tileHeight, tileGap);
+					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1]);
 				}
 			}
 		}
@@ -90,21 +76,23 @@ public class World {
 	}
 	
 	private void parseConfig(){
+		configMap = new double[256][2];
 		try {
 			Scanner config = new Scanner(new File("alphaConfig.txt"));
 			while(config.hasNextLine()){
 				String line = config.nextLine();
 				if(!line.contains("#")){
-					Scanner delimit = new Scanner(line).useDelimiter("\\s+");
-					int alpha = Integer.parseInt(delimit.nextLine());
-					int height = Integer.parseInt(delimit.nextLine());
-					int gap = Integer.parseInt(delimit.nextLine());
+					String[] delimit = line.split("\\s+"); //splitting by whitespace
+					configMap[Integer.parseInt(delimit[0])][0] = Double.parseDouble(delimit[1]);
+					configMap[Integer.parseInt(delimit[0])][1] = Double.parseDouble(delimit[2]);
 				}
 			}
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		System.out.println(Arrays.toString(configMap[255]));
+		System.out.println(Arrays.toString(configMap[254]));
 	}
 	public Tile getTileAt(double x, double y){
 		return tileSet[(int)x][(int)y];
