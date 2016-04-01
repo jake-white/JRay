@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -57,6 +58,7 @@ public class Screen extends JPanel{
 		int lastXValue = 0;
 		Point lastMap = new Point(0,0);
 		Tile lastTile = new Tile(TileType.EMPTY);
+		ArrayList<Strip> stripList = new ArrayList<Strip>();
 		
 		try {
 			lightSource = this.currentGame.getWorld().getLightSource();
@@ -98,19 +100,18 @@ public class Screen extends JPanel{
 						}
 						if(lastMap.equals(currentMap)){ //checking it a top should be drawn for a block
 							if(lastTopPoint < firstPoint+length){
-								g2d.fillRect(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) Math.round(firstPoint+length-lastTopPoint));
+								stripList.add(new Strip(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) Math.round(firstPoint+length-lastTopPoint), castedHeight, adjustedColor));
 							}
 							else{
-								g2d.fillRect(lastXValue,  (int) Math.round(firstPoint+length), (int) dX, (int) Math.round(lastTopPoint - (firstPoint + length)));
+								stripList.add(new Strip(lastXValue, (int) Math.round(firstPoint+length), (int) dX, (int) Math.round(lastTopPoint - (firstPoint + length)), castedHeight, adjustedColor));
 							}
 						}
 						if(columnHeight > 0){
-							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint), (int) dX, (int) Math.round(length+1));
+							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint), (int) dX, (int) Math.round(length+1), castedHeight, adjustedColor));
 						}
 						if(currentTile.getType() != TileType.CEILING){
-							g2d.setColor(Color.BLACK);
-							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint), (int) dX, 2);
-							g2d.fillRect(lastXValue,  (int) Math.round(firstPoint + length), (int) dX, 1);
+							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint), (int) dX, 2, castedHeight, Color.BLACK));
+							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint + length), (int) dX, 1, castedHeight, Color.BLACK));
 						}
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
@@ -118,6 +119,18 @@ public class Screen extends JPanel{
 					}
 				}
 				lastXValue+= dX;
+			}
+			
+			//stripList.add(new Sprite(50, 50, "yanmega.png", 50));
+			Collections.sort(stripList, new StripComparator());
+			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
+				if(stripList.get(i) instanceof Sprite){
+					g2d.drawImage(stripList.get(i).getImage(), stripList.get(i).getX(), stripList.get(i).getY(), null);
+				}
+				else{
+					g2d.setColor(stripList.get(i).getColor());
+					g2d.fillRect(stripList.get(i).getX(), stripList.get(i).getY(), stripList.get(i).getWidth(), stripList.get(i).getLength());
+				}
 			}
 		}
 		catch(Exception e){

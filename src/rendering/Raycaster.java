@@ -9,6 +9,8 @@ public class Raycaster {
 	Game currentGame;
 	ArrayList<ArrayList<Double>> columns;
 	ArrayList<ArrayList<Point>> mapPoints;
+	ArrayList<Sprite> spriteList;
+	double viewRange = Double.NaN;
 	
 	public Raycaster(Game game){
 		this.currentGame = game;
@@ -79,6 +81,9 @@ public class Raycaster {
                 if (checkX > maxX || checkY > maxY || checkX < 0 || checkY < 0) {
                     hit = true;
                 }
+                else if(RayPoint.distanceTo(playerX, playerY, currentX, currentY) > viewRange){
+                	hit = true;
+                }
                 else {
                 	if(!currentGame.getWorld().getTileAt(checkX, checkY + insideCheckY).getColor().equals(Color.WHITE)){
 	                    checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
@@ -140,6 +145,9 @@ public class Raycaster {
                 }
                 if(checkX > maxX || checkY > maxY || checkX < 0 || checkY < 0){
                     hit = true;
+                }
+                else if(RayPoint.distanceTo(playerX, playerY, currentX, currentY) > viewRange){
+                	hit = true;
                 }
                 else{
 	            	if(!currentGame.getWorld().getTileAt(checkX + insideCheckX, checkY).getColor().equals(Color.WHITE)){
