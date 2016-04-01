@@ -120,12 +120,15 @@ public class Screen extends JPanel{
 				}
 				lastXValue+= dX;
 			}
-			
-			//stripList.add(new Sprite(50, 50, "yanmega.png", 50));
+
+			stripList.add(new Sprite(50, 50, "yanmega.png", currentGame.getCamera(), this.getHeight()));
 			Collections.sort(stripList, new StripComparator());
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
 				if(stripList.get(i) instanceof Sprite){
-					g2d.drawImage(stripList.get(i).getImage(), stripList.get(i).getX(), stripList.get(i).getY(), null);
+					Sprite workingSprite = (Sprite) stripList.get(i);
+					if(workingSprite.isVisible())
+						g2d.drawImage(workingSprite.getImage(), workingSprite.getX(), (int) Math.floor(this.getHeight()/2 + workingSprite.getHeight()), 
+							(int) Math.round(this.getHeight()/workingSprite.getDistance()), (int) Math.round(this.getHeight()/workingSprite.getDistance()), null);
 				}
 				else{
 					g2d.setColor(stripList.get(i).getColor());

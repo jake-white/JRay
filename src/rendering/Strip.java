@@ -41,9 +41,5 @@ public class Strip {
 	public Color getColor(){
 		return this.color;
 	}
-	
-	public BufferedImage getImage(){
-		return null;
-	}
 }
 

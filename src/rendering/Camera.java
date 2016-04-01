@@ -3,7 +3,7 @@ package rendering;
 import game.Player;
 
 public class Camera {
-	double FOV = Math.PI/2;
+	double FOV = Math.PI/2, x, y;
 	Player player;
 	
 	public Camera(Player p){
@@ -19,6 +19,14 @@ public class Camera {
 	}
 	public double getHeight(){
 		return player.getHeight() + 0.8;
+	}
+	
+	public double getX(){
+		return player.getPosition().getX();
+	}
+	
+	public double getY(){
+		return player.getPosition().getY();
 	}
 
 }
