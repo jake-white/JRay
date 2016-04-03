@@ -121,7 +121,7 @@ public class Screen extends JPanel{
 				lastXValue+= dX;
 			}
 
-			stripList.add(new Sprite(50, 50, "yanmega.png", currentGame.getCamera(), this.getHeight()));
+			stripList.add(new Sprite(50, 50, "yanmega.png", currentGame.getCamera(), this.getWidth(), this.getHeight()));
 			Collections.sort(stripList, new StripComparator());
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
 				if(stripList.get(i) instanceof Sprite){
@@ -140,7 +140,6 @@ public class Screen extends JPanel{
 			//e.printStackTrace();
 			System.out.println("Something went wrong trying to paint to the screen, but we caught it.");
 		}
-	//	g2d.drawImage(yanmega, this.getWidth()/2, this.getHeight()/2, null);
 		g2d.setFont(new Font(null).deriveFont(20f));
 		g2d.setColor(Color.RED);
 		g2d.drawString("FPS: " + frameRate, 0, 20);

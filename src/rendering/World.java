@@ -64,6 +64,7 @@ public class World {
 				}
 			}
 		}
+		tileSet[50][50] = new Tile(Color.RED, 1, 0);
 		if(!playerFound){
 			playerFound = true;
 			currentGame.getPlayer().setPosition(10, 10);
