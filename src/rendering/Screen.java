@@ -73,15 +73,20 @@ public class Screen extends JPanel{
 				for(int j = 0; j < distanceList.size(); j++){
 					//grabbing information about the current column/tile
 					Point currentMap = columnPoints.get(j);
+				//	System.out.println(currentMap);
 					Tile currentTile = currentGame.getWorld().getTileAt(currentMap);
 					Color thisColor = currentTile.getColor();
 					double thisHeight = currentTile.getHeight();
 					double thisGap = currentTile.getGap();
 					if(!thisColor.equals(Color.WHITE)){
-						double columnHeight = -1;
-						if(distanceList.get(j) > 0){
-							columnHeight = this.getHeight()/distanceList.get(j);
+						double columnHeight = 0;
+						boolean weirdValueWarning = false;
+						if(distanceList.get(j) == 0.0){ //weird value here
+							columnHeight = Integer.MAX_VALUE;
+							weirdValueWarning = true;
 						}
+						else
+							columnHeight = this.getHeight()/distanceList.get(j);
 						g2d.setColor(thisColor);
 						double castedHeight = columnHeight;
 						Color adjustedColor = transformColor(thisColor, RayPoint.distanceTo(currentMap.getX(), currentMap.getY(), lightSource.getX(), lightSource.getY()));
@@ -89,21 +94,28 @@ public class Screen extends JPanel{
 						//calculating first and last points of the columns
 							double firstPoint = 0;
 							double length = 0;
-						if(cameraHeight > thisGap){
-							firstPoint = this.getHeight();
-							length = 0;
-						}
 						g2d.setColor(adjustedColor);
-						if(columnHeight > 0){
-							firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight));
-							length = castedHeight*thisHeight;
-						}
-						if(lastMap.equals(currentMap)){ //checking it a top should be drawn for a block
-							if(lastTopPoint < firstPoint+length){
-								stripList.add(new Strip(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) Math.round(firstPoint+length-lastTopPoint), castedHeight, adjustedColor));
+						firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight));
+						length = castedHeight*thisHeight;
+
+						if(lastTile.equals(currentTile) || weirdValueWarning){ //checking it a top should be drawn for a block
+							
+							if(lastTopPoint < firstPoint){
+								if(weirdValueWarning){
+									firstPoint = this.getHeight();
+									length = 0;
+								}
+								double columnLengthTemp = Math.round(firstPoint+length-lastTopPoint);
+								stripList.add(new Strip(lastXValue,  (int) Math.round(lastTopPoint), (int) dX, (int) columnLengthTemp, castedHeight, adjustedColor));
 							}
 							else{
-								stripList.add(new Strip(lastXValue, (int) Math.round(firstPoint+length), (int) dX, (int) Math.round(lastTopPoint - (firstPoint + length)), castedHeight, adjustedColor));
+								if(weirdValueWarning){
+									firstPoint = 0;
+									length = 0;
+								}
+								double columnLengthTemp = Math.round(lastTopPoint - (firstPoint + length));
+								stripList.add(new Strip(lastXValue, (int) Math.round(firstPoint+length), (int) dX, (int) columnLengthTemp, castedHeight, adjustedColor));
+							//	System.out.println(stripList.get(stripList.size()-1).toString());
 							}
 						}
 						if(columnHeight > 0){
@@ -113,6 +125,7 @@ public class Screen extends JPanel{
 							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint), (int) dX, 2, castedHeight, Color.BLACK));
 							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint + length), (int) dX, 1, castedHeight, Color.BLACK));
 						}
+					//	System.out.println(lastTopPoint);
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
 						lastTile = currentTile;
@@ -123,7 +136,10 @@ public class Screen extends JPanel{
 
 			stripList.add(new Sprite(50, 50, "yanmega.png", currentGame.getCamera(), this.getWidth(), this.getHeight()));
 			Collections.sort(stripList, new StripComparator());
+			System.out.println("--------------------------------------");
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
+//				if(stripList.get(i).getCast() == Double.POSITIVE_INFINITY)
+//					System.out.println(stripList.get(i).getLength());
 				if(stripList.get(i) instanceof Sprite){
 					Sprite workingSprite = (Sprite) stripList.get(i);
 					if(workingSprite.isVisible())

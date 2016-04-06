@@ -41,5 +41,9 @@ public class Strip {
 	public Color getColor(){
 		return this.color;
 	}
+	
+	public String toString(){
+		return "["+x+", "+y+", "+width+", "+length+"]";
+	}
 }
 

@@ -40,7 +40,7 @@ public class Sprite extends Strip{
 	}
 	
 	public boolean isVisible(){
-		System.out.println(this.getRelativeAngle());
+	//	System.out.println(this.getRelativeAngle());
 		if(this.getRelativeAngle() > c.getFOV())
 			return false;
 		return true;
@@ -48,7 +48,7 @@ public class Sprite extends Strip{
 	
 	@Override
 	public int getX(){
-		return (int) Math.round((this.getRelativeAngle()/c.getFOV())*this.screenWidth);
+		return (int) Math.round((this.getRelativeAngle()/c.getFOV())*this.screenWidth)-this.width/2;
 	}
 	
 	public double getDistance(){
