@@ -40,6 +40,12 @@ public class Physics {
 		else if(input.input(KeyEvent.VK_S)){
 			p.walk(-walk_speed);
 		}
+		if(input.input(KeyEvent.VK_A)){
+			p.strafe(walk_speed);
+		}
+		else if(input.input(KeyEvent.VK_D)){
+			p.strafe(-walk_speed);
+		}
 		if(input.input(KeyEvent.VK_Q)){
 			p.turn(turn_speed);
 		}

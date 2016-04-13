@@ -87,6 +87,7 @@ public class Raycaster {
                 else {
                 	if(!currentGame.getWorld().getTileAt(checkX, checkY + insideCheckY).getColor().equals(Color.WHITE)){
 	                    checkingDistance = RayPoint.distanceTo(playerX, playerY, currentX, currentY)*fisheye;
+	                    //TODO: mess around with Double.MIN_VALUE
 	                    if(checkingDistance < 0.00001) //super arbitrary. please don't hate me, hate floating point numbers
 	                    	checkingDistance = 0;
 	                    int index = insertAllHits(checkingDistance, allHits);

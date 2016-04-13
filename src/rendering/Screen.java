@@ -31,7 +31,6 @@ public class Screen extends JPanel{
 	
 	@Override
 	public void paintComponent(Graphics g){
-		//System.out.println(lightSource);
 		//Overriding the JPanel painting
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -73,7 +72,6 @@ public class Screen extends JPanel{
 				for(int j = 0; j < distanceList.size(); j++){
 					//grabbing information about the current column/tile
 					Point currentMap = columnPoints.get(j);
-				//	System.out.println(currentMap);
 					Tile currentTile = currentGame.getWorld().getTileAt(currentMap);
 					Color thisColor = currentTile.getColor();
 					double thisHeight = currentTile.getHeight();
@@ -115,7 +113,6 @@ public class Screen extends JPanel{
 								}
 								double columnLengthTemp = Math.round(lastTopPoint - (firstPoint + length));
 								stripList.add(new Strip(lastXValue, (int) Math.round(firstPoint+length), (int) dX, (int) columnLengthTemp, castedHeight, adjustedColor));
-							//	System.out.println(stripList.get(stripList.size()-1).toString());
 							}
 						}
 						if(columnHeight > 0){
@@ -125,7 +122,6 @@ public class Screen extends JPanel{
 							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint), (int) dX, 2, castedHeight, Color.BLACK));
 							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint + length), (int) dX, 1, castedHeight, Color.BLACK));
 						}
-					//	System.out.println(lastTopPoint);
 						lastTopPoint = (int) Math.round(firstPoint);
 						lastMap = currentMap;
 						lastTile = currentTile;
@@ -134,16 +130,13 @@ public class Screen extends JPanel{
 				lastXValue+= dX;
 			}
 
-			stripList.add(new Sprite(50, 50, "yanmega.png", currentGame.getCamera(), this.getWidth(), this.getHeight()));
+			stripList.add(new Sprite(50.5, 50.5, "yanmega.png", currentGame.getCamera(), this.getWidth(), this.getHeight()));
 			Collections.sort(stripList, new StripComparator());
-			System.out.println("--------------------------------------");
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
-//				if(stripList.get(i).getCast() == Double.POSITIVE_INFINITY)
-//					System.out.println(stripList.get(i).getLength());
 				if(stripList.get(i) instanceof Sprite){
 					Sprite workingSprite = (Sprite) stripList.get(i);
 					if(workingSprite.isVisible())
-						g2d.drawImage(workingSprite.getImage(), workingSprite.getX(), (int) Math.floor(this.getHeight()/2 + workingSprite.getHeight()), 
+						g2d.drawImage(workingSprite.getImage(), workingSprite.getX(), (int) workingSprite.getY(), 
 							(int) Math.round(this.getHeight()/workingSprite.getDistance()), (int) Math.round(this.getHeight()/workingSprite.getDistance()), null);
 				}
 				else{
@@ -175,7 +168,6 @@ public class Screen extends JPanel{
 	public Color transformColor(Color original, double distance){
 		if(distance > 0){
 		double intensity = 1 - distance/15;
-		//System.out.println(intensity);
 		if(intensity > 1)
 			intensity = 1;
 		else if(intensity < 0.3)

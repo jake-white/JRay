@@ -3,7 +3,7 @@ package game;
 import rendering.RayPoint;
 
 public class Player {
-	double height = 0, angle = Math.PI;
+	double height = 0, angle = 0;
 	double accelX = 0, accelY = 0;
 	RayPoint position;
 	
@@ -68,6 +68,27 @@ public class Player {
         this.position.increaseX(xDir*Math.abs(Math.cos(angle))*inc);
         this.position.increaseY(yDir*Math.abs(Math.sin(angle))*inc);
 		
+	}
+	
+	public void strafe(double inc){
+		double currentAngle = RayPoint.validateAngle(angle);
+		if(inc > 0)
+			currentAngle += Math.PI/2;
+		else
+			currentAngle -= Math.PI/2;
+		boolean posDirX = currentAngle < Math.PI/2 || currentAngle > (Math.PI *(3.0/2.0));
+        boolean posDirY = currentAngle > Math.PI;
+        int xDir, yDir;
+        if(posDirX)
+            xDir = 1;
+        else
+            xDir = -1;
+        if(posDirY)
+            yDir = 1;
+        else
+            yDir = -1;
+        this.position.increaseX(xDir* Math.abs(Math.cos(currentAngle)*inc));
+        this.position.increaseY(yDir* Math.abs(Math.sin(currentAngle)*inc));
 	}
 
 	public double getAngle() {
