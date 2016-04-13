@@ -130,7 +130,7 @@ public class Screen extends JPanel{
 				lastXValue+= dX;
 			}
 
-			stripList.add(new Sprite(50.5, 50.5, "yanmega.png", currentGame.getCamera(), this.getWidth(), this.getHeight()));
+			stripList.addAll(this.currentGame.getWorld().getSpriteList());
 			Collections.sort(stripList, new StripComparator());
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
 				if(stripList.get(i) instanceof Sprite){

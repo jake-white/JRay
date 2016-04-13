@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -15,6 +16,7 @@ import game.Game;
 public class World {
 	BufferedImage worldImg;
 	Tile[][] tileSet;
+	ArrayList<Sprite> spriteSet;
 	double[][] configMap;
 	Color playerInsertion;
 	Point light;
@@ -38,6 +40,7 @@ public class World {
 	private void parseMap() { //reads through the image for each pixel
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
+		spriteSet = new ArrayList<Sprite>();
 		tileSet = new Tile[width][height];
 		Color emptySpace = new Color(255, 255, 255, 0); //png transparent whitespace
 		for(int x = 0; x < width; ++x){
@@ -62,6 +65,9 @@ public class World {
 				else{
 					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1]);
 				}
+				if(configMap[colorAtCoord.getAlpha()][2]==1){
+					spriteSet.add(new Sprite(x, y, "yanmega.png", currentGame.getCamera(), this.currentGame.getScreen()));
+				}
 			}
 		}
 		//tileSet[50][50] = new Tile(Color.RED, 1, 0);
@@ -77,7 +83,7 @@ public class World {
 	}
 	
 	private void parseConfig(){
-		configMap = new double[256][2];
+		configMap = new double[256][3];
 		try {
 			Scanner config = new Scanner(new File("alphaConfig.txt"));
 			while(config.hasNextLine()){
@@ -86,6 +92,7 @@ public class World {
 					String[] delimit = line.split("\\s+"); //splitting by whitespace
 					configMap[Integer.parseInt(delimit[0])][0] = Double.parseDouble(delimit[1]);
 					configMap[Integer.parseInt(delimit[0])][1] = Double.parseDouble(delimit[2]);
+					configMap[Integer.parseInt(delimit[0])][2] = Integer.parseInt(delimit[3]);
 				}
 			}
 			
@@ -101,6 +108,10 @@ public class World {
 	
 	public Point getLightSource(){
 		return light;
+	}
+	
+	public ArrayList<Sprite> getSpriteList(){
+		return spriteSet;
 	}
 	
 	public Tile getTileAt(Point p){

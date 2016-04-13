@@ -15,12 +15,12 @@ public class Sprite extends Strip{
 	private int screenWidth, screenHeight;
 	private double x, y;
 	
-	public Sprite(double x, double y, String fileName, Camera c, int screenWidth, int screenHeight){
+	public Sprite(double x, double y, String fileName, Camera c, Screen screen){
 		super(0, 0, 0, 0, 0, null);
 		this.x = x;
 		this.y = y;
-		this.screenHeight = screenHeight;
-		this.screenWidth = screenWidth;
+		this.screenHeight = screen.getHeight();
+		this.screenWidth = screen.getWidth();
 		this.c = c;
 		this.fileName = fileName;
 		try {
