@@ -36,7 +36,7 @@ public class Game {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
 		mainFrame.setTitle("JRay");
-		world = new World(this, "world.png");
+		world = new World(this, "res/world.png");
 		System.out.println("Started game!");
 		currentScreen.rayCast();
 		gameLoop = new Timer(1, new Tick(this, mainFrame));

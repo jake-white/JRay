@@ -28,7 +28,7 @@ public class Screen extends JPanel{
 		super();
 		gun = null;
 		try {
-			File file = new File("wuz1.png");
+			File file = new File("res/wuz1.png");
 			gun = ImageIO.read(file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
