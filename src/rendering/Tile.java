@@ -38,6 +38,14 @@ public class Tile {
 		return this.height;
 	}
 	
+	public double getBottom(){
+		return this.gap;
+	}
+	
+	public double getTop(){
+		return this.gap+this.height;
+	}
+	
 	public double getGap(){
 		return this.gap;
 	}

@@ -6,11 +6,14 @@ import javax.swing.JFrame;
 
 import game.Game;
 import game.Player;
+import rendering.Tile;
+import rendering.TileType;
 
 public class Physics {
 	Game game;
 	Player player;
 	InputManager input;
+	public double frictionConstant = 0.5, stairThreshold = 0.21;
 	
 	public Physics(Game game, JFrame mainFrame){
 		this.input = new InputManager();
@@ -20,14 +23,70 @@ public class Physics {
 	}
 	
 	public void tick(){
-		this.calculatePhys();
 		this.parseInput(this.player);
+		this.calculatePhys();
 	}
 	
 	public void calculatePhys(){
 		validateHeight();
-		player.setHeight(player.getHeight() + player.getAccelY());
-		player.setPosition(player.getPosition().getX() + player.getAccelX(), player.getPosition().getY() + player.getAccelY());
+		double[] intendedPosition = new double[3];
+		//friction
+		player.setAccelX(player.getAccelX()*frictionConstant);
+		player.setAccelY(player.getAccelY()*frictionConstant);
+		intendedPosition[0] = player.getPosition().getX() + player.getAccelX();
+		intendedPosition[1] = player.getPosition().getY() + player.getAccelY();
+		intendedPosition[2] = player.getZ() + player.getAccelZ();
+		if(!collisionCheck(intendedPosition, false)){
+			player.setPosition(intendedPosition[0], intendedPosition[1]);
+			player.setZ(intendedPosition[2]);
+		}
+		else
+			player.setAccelZ(0);
+			
+	}
+	
+	public boolean collisionCheck(double[] intended, boolean gravity){
+		Tile[][] tiles = game.getWorld().getTiles();
+		Player intendedPlayer = new Player();
+		intendedPlayer.setPosition(intended[0], intended[1]);
+		intendedPlayer.setZ(intended[2]);
+		boolean hasCollidedYet = false;
+		for(int x = 0; x < tiles.length; ++x){
+			for(int y = 0; y < tiles[x].length; ++y){
+				if(this.isColliding(intendedPlayer, tiles[x][y], x, y, intended, gravity)){
+					hasCollidedYet = true;
+				}
+			}
+		}
+		return hasCollidedYet;
+	}
+	
+	public boolean isColliding(Player player, Tile tile, int x, int y, double[] intended, boolean gravity){
+		if((int) Math.floor(player.getPosition().getX()) == x && (int) Math.floor(player.getPosition().getY()) == y
+				&& !(tile.getType().equals(TileType.EMPTY) || tile.getType().equals(TileType.PLAYER))){
+			//if within x and y is isn't an empty tile
+			if(player.getBottom() < tile.getTop() && player.getTop() > tile.getTop()){
+				//if it's intersecting it z-position wise
+				if(Math.abs(tile.getTop() - player.getBottom()) <= stairThreshold && !gravity){
+					System.out.println(player.getBottom() + " VS " + tile.getTop());
+					System.out.println(Math.abs(player.getBottom() - tile.getTop()));
+					this.player.setPosition(intended[0], intended[1]);
+					this.player.setZ(tile.getTop());
+					this.player.setAccelZ(0);
+					return true;
+				}
+				return true;
+			}
+			else if(player.getBottom() < tile.getBottom() && player.getTop() > tile.getBottom() && !gravity){
+				player.setZ(tile.getBottom());
+				return true;
+			}
+			else if(player.getBottom() >= tile.getBottom() && player.getTop() <= tile.getTop() && !gravity){
+				//if the player is completely within the tile
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public void parseInput(Player p){
@@ -53,6 +112,7 @@ public class Physics {
 			p.turn(-turn_speed);
 		}
 		if(input.input(KeyEvent.VK_Z)){
+			if(player.getAccelZ() == 0)
 			p.up(fly_speed);
 		}
 		else if(input.input(KeyEvent.VK_X)){
@@ -61,9 +121,20 @@ public class Physics {
 	}
 	
 	private void validateHeight(){
-		if(player.getHeight() < 0){
-			player.setAccelY(0);
-			player.setHeight(0);
+		if(player.getZ() < 0){
+			player.setAccelZ(0);
+			player.setZ(0);
+		}
+		else{
+			double[] gravity = new double[3];
+			gravity[0] = player.getPosition().getX();
+			gravity[1] = player.getPosition().getY();
+			gravity[2] = player.getZ() + (player.getAccelZ()-.001);
+			
+			if(!collisionCheck(gravity, true)){
+				player.setAccelZ(player.getAccelZ()-.001);				
+			}
+				
 		}
 	}
 }

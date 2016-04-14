@@ -12,6 +12,7 @@ import java.util.Scanner;
 import javax.imageio.ImageIO;
 
 import game.Game;
+import rendering.Tile;
 
 public class World {
 	BufferedImage worldImg;
@@ -66,7 +67,7 @@ public class World {
 					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1]);
 				}
 				if(configMap[colorAtCoord.getAlpha()][2]==1){
-					spriteSet.add(new Sprite(x, y, "yanmega.png", currentGame.getCamera(), this.currentGame.getScreen()));
+					spriteSet.add(new Sprite(x, y, "yanmega.png", currentGame.getCamera(), this.currentGame));
 				}
 			}
 		}
@@ -123,6 +124,9 @@ public class World {
 	
 	public int getHeight(){
 		return height;
+	}
+	public Tile[][] getTiles() {
+		return tileSet;
 	}
 
 }

@@ -22,9 +22,18 @@ public class Screen extends JPanel{
 	double frameRate;
 	int resX = 200, resY = 270;
 	Point lightSource;
+	private BufferedImage gun;
 	
 	public Screen(Game game){
 		super();
+		gun = null;
+		try {
+			File file = new File("wuz1.png");
+			gun = ImageIO.read(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.currentGame = game;
 		this.render = new Raycaster(game);
 	}
@@ -45,20 +54,11 @@ public class Screen extends JPanel{
 		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
 		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
-		BufferedImage yanmega = null;
-		try {
-			File file = new File("res/yanmega.png");
-			yanmega = ImageIO.read(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		int lastTopPoint = -1;
 		int lastXValue = 0;
 		Point lastMap = new Point(0,0);
 		Tile lastTile = new Tile(TileType.EMPTY);
 		ArrayList<Strip> stripList = new ArrayList<Strip>();
-		
 		try {
 			lightSource = this.currentGame.getWorld().getLightSource();
 			/* Painting the screen from raycasting data for this frame
@@ -144,6 +144,7 @@ public class Screen extends JPanel{
 					g2d.fillRect(stripList.get(i).getX(), stripList.get(i).getY(), stripList.get(i).getWidth(), stripList.get(i).getLength());
 				}
 			}
+			g2d.drawImage(gun, 0, this.getHeight()/2, this.getWidth(),this.getHeight()/2, null);
 		}
 		catch(Exception e){
 			//e.printStackTrace();

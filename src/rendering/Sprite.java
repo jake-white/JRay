@@ -6,21 +6,21 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import game.Game;
 import game.Player;
 
 public class Sprite extends Strip{
 	private BufferedImage img;
 	private String fileName;
 	private Camera c;
-	private int screenWidth, screenHeight;
 	private double x, y;
+	private Game game;
 	
-	public Sprite(double x, double y, String fileName, Camera c, Screen screen){
+	public Sprite(double x, double y, String fileName, Camera c, Game game){
 		super(0, 0, 0, 0, 0, null);
 		this.x = x;
 		this.y = y;
-		this.screenHeight = screen.getHeight();
-		this.screenWidth = screen.getWidth();
+		this.game = game;
 		this.c = c;
 		this.fileName = fileName;
 		try {
@@ -41,8 +41,6 @@ public class Sprite extends Strip{
 		double dy = c.getY() - this.y;
 		boolean yPos = c.getY() > this.y;
 		double angle = 0, relAngle = 0;
-		System.out.println("Sprite: " +x+", "+y+". Player: "+c.getX()+", "+c.getY());
-		System.out.println("dx = " + dx + ", dy = " + dy);
 		if(xPos && yPos){
 			angle = Math.atan(dx/dy) + Math.PI/2;
 		}
@@ -64,19 +62,18 @@ public class Sprite extends Strip{
 	}
 	
 	public boolean isVisible(){
-		System.out.println(this.getRelativeAngle());
-		if(Math.abs(this.getRelativeAngle()) > c.getFOV()/2)
+		if(Math.abs(this.getX()) > game.getScreen().getWidth() || this.getX() < -this.getWidth())
 			return false;
 		return true;
 	}
 	
 	@Override
 	public int getX(){
-		return (int) Math.round(this.screenWidth/2 + (this.getRelativeAngle()/c.getFOV())*this.screenWidth) - this.getWidth()/2;
+		return (int) Math.round(this.game.getScreen().getWidth()/2 + (this.getRelativeAngle()/c.getFOV())*this.game.getScreen().getWidth()) - this.getWidth()/2;
 	}
 	
 	public int getY(){
-		return (int) Math.round(this.screenHeight/2 + this.getHeight()*(c.getHeight()-1));
+		return (int) Math.round(this.game.getScreen().getHeight()/2 + this.getHeight()*(c.getHeight()-1));
 	}
 	
 	public double getDistance(){
@@ -89,7 +86,7 @@ public class Sprite extends Strip{
 	}
 	
 	public int getHeight(){
-		return (int) Math.round(screenHeight/this.getDistance());
+		return (int) Math.round(this.game.getScreen().getHeight()/this.getDistance());
 	}
 	
 	public int getWidth(){
