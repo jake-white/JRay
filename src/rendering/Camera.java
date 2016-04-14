@@ -5,6 +5,7 @@ import game.Player;
 public class Camera {
 	double FOV = Math.PI/2, x, y;
 	Player player;
+	double viewingAngle = 1;
 	
 	public Camera(Player p){
 		this.player = p;
@@ -12,6 +13,13 @@ public class Camera {
 
 	public double getAngle(){
 		return player.getAngle();
+	}
+	
+	public double getView(){
+		return viewingAngle;
+	}
+	public void changeView(double inc){
+		viewingAngle+=inc;
 	}
 	
 	public double getFOV(){

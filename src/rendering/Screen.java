@@ -48,6 +48,7 @@ public class Screen extends JPanel{
 		          RenderingHints.VALUE_RENDER_QUALITY);
 		
 		double cameraHeight = currentGame.getCamera().getHeight();
+		double cameraAngle = currentGame.getCamera().getView();
 		g2d.setColor(Color.BLACK.brighter());
 		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
 		g2d.setColor(new Color(64, 64, 64));
@@ -93,7 +94,7 @@ public class Screen extends JPanel{
 							double firstPoint = 0;
 							double length = 0;
 						g2d.setColor(adjustedColor);
-						firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight));
+						firstPoint = Math.floor(this.getHeight()/2 + castedHeight*(cameraHeight - thisGap - thisHeight))*cameraAngle;
 						length = castedHeight*thisHeight;
 
 						if(lastTile.equals(currentTile) || weirdValueWarning){ //checking it a top should be drawn for a block
@@ -114,6 +115,9 @@ public class Screen extends JPanel{
 								double columnLengthTemp = Math.round(lastTopPoint - (firstPoint + length));
 								stripList.add(new Strip(lastXValue, (int) Math.round(firstPoint+length), (int) dX, (int) columnLengthTemp, castedHeight, adjustedColor));
 							}
+						}
+						else{
+						//	length-=(10/(castedHeight*thisHeight)*(1/cameraAngle));
 						}
 						if(columnHeight > 0){
 							stripList.add(new Strip(lastXValue,  (int) Math.round(firstPoint), (int) dX, (int) Math.round(length+1), castedHeight, adjustedColor));

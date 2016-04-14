@@ -1,11 +1,19 @@
 package physics;
 
+import java.awt.AWTException;
+import java.awt.Cursor;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
 import game.Game;
 import game.Player;
+import rendering.Camera;
 import rendering.Tile;
 import rendering.TileType;
 
@@ -13,11 +21,14 @@ public class Physics {
 	Game game;
 	Player player;
 	InputManager input;
+	JFrame mainFrame;
 	public double frictionConstant = 0.5, stairThreshold = 0.21;
 	
 	public Physics(Game game, JFrame mainFrame){
+		this.mainFrame = mainFrame;
 		this.input = new InputManager();
 		mainFrame.addKeyListener(input);
+		mainFrame.addMouseListener(input);
 		this.game = game;
 		this.player = game.getPlayer();
 	}
@@ -89,10 +100,40 @@ public class Physics {
 		return false;
 	}
 	
+	public void mouseInput(){
+		double turn_speed = 0.01;
+		if(input.isLocked()){
+			Cursor cursor = Cursor.getDefaultCursor();
+			Robot bot;
+			int sourceX = mainFrame.getX()+mainFrame.getWidth()/2;
+			int sourceY = mainFrame.getY()+mainFrame.getHeight()/2;
+			int dx = sourceX - (int) MouseInfo.getPointerInfo().getLocation().getX();
+			int dy = (int) MouseInfo.getPointerInfo().getLocation().getY() - sourceY;
+			BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+
+			// Create a new blank cursor.
+			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			    cursorImg, new Point(0, 0), "blank cursor");
+
+			// Set the blank cursor to the JFrame.
+			mainFrame.getContentPane().setCursor(blankCursor);
+			
+			try {
+				bot = new Robot();
+				bot.mouseMove(sourceX, sourceY);
+				player.turn(turn_speed*dx);
+			} catch (AWTException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void parseInput(Player p){
+		this.mouseInput();
 		double walk_speed = 0.05;
-		double turn_speed = 0.02;
 		double fly_speed = 0.04;
+		Camera camera = game.getCamera();
 		if(input.input(KeyEvent.VK_W)){
 			p.walk(walk_speed);
 		}
@@ -105,18 +146,15 @@ public class Physics {
 		else if(input.input(KeyEvent.VK_D)){
 			p.strafe(-walk_speed);
 		}
-		if(input.input(KeyEvent.VK_Q)){
-			p.turn(turn_speed);
+		if(input.input(KeyEvent.VK_R)){
+			camera.changeView(walk_speed);
 		}
-		else if(input.input(KeyEvent.VK_E)){
-			p.turn(-turn_speed);
+		else if(input.input(KeyEvent.VK_F)){
+			camera.changeView(-walk_speed);
 		}
-		if(input.input(KeyEvent.VK_Z)){
+		if(input.input(KeyEvent.VK_SPACE)){
 			if(player.getAccelZ() == 0)
 			p.up(fly_speed);
-		}
-		else if(input.input(KeyEvent.VK_X)){
-			p.up(-fly_speed);
 		}
 	}
 	
