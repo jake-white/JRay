@@ -15,7 +15,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 public class InputManager implements KeyListener, MouseListener{
-	boolean mouseLocked = false;
+	boolean mouseLocked = false, mouseClicked = true;
 	private final static Set<Integer> keyevents = new HashSet<Integer>();
 
 	public boolean input(int key) {
@@ -60,7 +60,17 @@ public class InputManager implements KeyListener, MouseListener{
 				e.printStackTrace();
 			}
 		}
-		
+		else if(thing instanceof JFrame){
+			mouseClicked = true;
+		}
+	}
+	
+	public boolean getMouseClicked(){
+		if(mouseClicked){
+			mouseClicked = false;
+			return true;
+		}
+		else return false;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import game.Game;
 import game.Player;
 import rendering.Camera;
+import rendering.Sprite;
 import rendering.Tile;
 import rendering.TileType;
 
@@ -39,6 +40,10 @@ public class Physics {
 	}
 	
 	public void calculatePhys(){
+		Sprite enemy = game.getScreen().getMiddlePixelSprite();
+		if(input.getMouseClicked() &&  enemy != null){
+			enemy.hit(10);
+		}
 		validateHeight();
 		double[] intendedPosition = new double[3];
 		//friction

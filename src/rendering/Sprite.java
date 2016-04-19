@@ -15,6 +15,9 @@ public class Sprite extends Strip{
 	private Camera c;
 	private double x, y;
 	private Game game;
+	//actual game values now
+	private double hp = 20, attack;
+	private boolean alive = true;
 	
 	public Sprite(double x, double y, String fileName, Camera c, Game game){
 		super(0, 0, 0, 0, 0, null);
@@ -29,6 +32,12 @@ public class Sprite extends Strip{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void hit(double attack){ //this sprite is getting shot at
+		this.hp-=attack;
+		if(hp <= 0)
+			alive = false;
 	}
 	
 	public BufferedImage getImage(){
@@ -64,7 +73,12 @@ public class Sprite extends Strip{
 	public boolean isVisible(){
 		if(Math.abs(this.getX()) > game.getScreen().getWidth() || this.getX() < -this.getWidth())
 			return false;
+		else if(!isAlive())	return false;		
 		return true;
+	}
+	
+	public boolean isAlive(){
+		return alive;
 	}
 	
 	@Override

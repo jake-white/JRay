@@ -23,6 +23,7 @@ public class Screen extends JPanel{
 	int resX = 200, resY = 270;
 	Point lightSource;
 	private BufferedImage gun;
+	private Sprite middlePixelSprite;
 	
 	public Screen(Game game){
 		super();
@@ -136,16 +137,32 @@ public class Screen extends JPanel{
 
 			stripList.addAll(this.currentGame.getWorld().getSpriteList());
 			Collections.sort(stripList, new StripComparator());
+			middlePixelSprite = null;
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance
 				if(stripList.get(i) instanceof Sprite){
 					Sprite workingSprite = (Sprite) stripList.get(i);
-					if(workingSprite.isVisible())
-						g2d.drawImage(workingSprite.getImage(), workingSprite.getX(), (int) workingSprite.getY(), 
-							(int) Math.round(this.getHeight()/workingSprite.getDistance()), (int) Math.round(this.getHeight()/workingSprite.getDistance()), null);
+					if(workingSprite.isVisible()){
+						int x1 = workingSprite.getX(), y1 = workingSprite.getY();
+						int x2 = x1 + (int) Math.round(this.getHeight()/workingSprite.getDistance());
+						int y2 = y1 + (int) Math.round(this.getHeight()/workingSprite.getDistance());
+						g2d.drawImage(workingSprite.getImage(), x1, y1, (int) Math.round(this.getHeight()/workingSprite.getDistance())
+								, (int) Math.round(this.getHeight()/workingSprite.getDistance()), null);
+						if(x1 <= this.getWidth()/2 && y1 <= this.getHeight()/2 && x2 >= this.getWidth()/2 && y2 >= this.getHeight()/2){
+							//it is in the center of the crosshairs. this is dumb.
+							middlePixelSprite = workingSprite;
+						}
+					}
 				}
 				else{
 					g2d.setColor(stripList.get(i).getColor());
 					g2d.fillRect(stripList.get(i).getX(), stripList.get(i).getY(), stripList.get(i).getWidth(), stripList.get(i).getLength());
+					int x1 = stripList.get(i).getX(), y1 = stripList.get(i).getY();
+					int x2 = stripList.get(i).getX() + stripList.get(i).getWidth();
+					int y2 = stripList.get(i).getY() + stripList.get(i).getLength();
+					if(x1 <= this.getWidth()/2 && y1 <= this.getHeight()/2 && x2 >= this.getWidth()/2 && y2 >= this.getHeight()/2){
+						//it is in the center of the crosshairs. this is dumb.
+						middlePixelSprite = null;
+					}
 				}
 			}
 			g2d.drawImage(gun, 0, this.getHeight()/2, this.getWidth(),this.getHeight()/2, null);
@@ -168,6 +185,10 @@ public class Screen extends JPanel{
 	
 	public void rayCast(){
 		render.cast();
+	}
+	
+	public Sprite getMiddlePixelSprite(){
+		return middlePixelSprite;
 	}
 	
 	public Color transformColor(Color original, double distance){
