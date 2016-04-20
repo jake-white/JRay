@@ -1,6 +1,7 @@
 package rendering;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +16,7 @@ public class Sprite extends Strip{
 	private String fileName;
 	private Camera c;
 	private double x, y, zpos = 1;
+	double[] accel = new double[3];
 	private Game game;
 	//actual game values now
 	private double hp = 20, attack, ratio;
@@ -72,7 +74,7 @@ public class Sprite extends Strip{
 		boolean xPos = c.getX() > this.x;
 		double dy = c.getY() - this.y;
 		boolean yPos = c.getY() > this.y;
-		double angle = 0, relAngle = 0;
+		double angle = 0;
 		if(xPos && yPos){
 			angle = Math.atan(dx/dy) + Math.PI/2;
 		}
@@ -89,14 +91,18 @@ public class Sprite extends Strip{
 			dy = Math.abs(dy);
 			angle = Math.atan(dy/dx);
 		}
-		relAngle = c.getAngle() - angle;
-		return relAngle;
+		return angle;
+	}
+	
+	public double getCameraRelAngle(){
+		return c.getAngle() - getRelativeAngle();
 	}
 	
 	public boolean isVisible(){
 		if(Math.abs(this.getX()) > game.getScreen().getWidth() || this.getX() < -this.getWidth())
 			return false;
-		else if(!isAlive())	return false;		
+		else if(!isAlive())	return false;
+		System.out.println("visible");
 		return true;
 	}
 	
@@ -104,9 +110,64 @@ public class Sprite extends Strip{
 		return alive;
 	}
 	
+	public double getAngle(){
+		System.out.println(x + ", " + y + " " + getRelativeAngle());
+		return RayPoint.validateAngle(Math.PI + getRelativeAngle()); //pointing towards camera at all times
+	}
+	
+	public void makeDecision(){
+		if(isAlive()){
+			walk(0.02);
+		}
+	}
+
+	public void walk(double inc) {
+		double angle = this.getAngle();
+        boolean posDirX = angle < Math.PI/2 || angle > (Math.PI *(3.0/2.0));
+        boolean posDirY = angle > Math.PI;
+        int xDir, yDir;
+        if(posDirX)
+            xDir = 1;
+        else
+            xDir = -1;
+        if(posDirY)
+            yDir = 1;
+        else
+            yDir = -1;
+            
+        this.setAccelX(this.getAccelX() + xDir*Math.abs(Math.cos(angle))*inc);
+        this.setAccelY(this.getAccelY() + yDir*Math.abs(Math.sin(angle))*inc);
+		
+	}
+
+
+	public double getAccelX(){
+		return accel[0];
+	}
+
+	public void setAccelX(double accel){
+		this.accel[0] = accel;
+	}
+
+	public double getAccelY(){
+		return accel[1];
+	}
+
+	public void setAccelY(double accel){
+		this.accel[1] = accel;
+	}	
+
+	public double getAccelZ(){
+		return accel[2];
+	}
+
+	public void setAccelZ(double accel){
+		this.accel[2] = accel;
+	}	
+	
 	@Override
 	public int getX(){
-		return (int) Math.round(this.game.getScreen().getWidth()/2 + (this.getRelativeAngle()/c.getFOV())*this.game.getScreen().getWidth()) - this.getWidth()/2;
+		return (int) Math.round(this.game.getScreen().getWidth()/2 + (this.getCameraRelAngle()/c.getFOV())*this.game.getScreen().getWidth()) - this.getWidth()/2;
 	}
 	
 	public int getY(){
@@ -133,6 +194,23 @@ public class Sprite extends Strip{
 	
 	public int getWidth(){
 		return (int) (this.getHeight()*ratio);
+	}
+
+	public double getPositionX() {
+		return x;
+	}
+
+	public double getPositionY() {
+		return x;
+	}
+
+	public void setPosition(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public void setZ(double z) {
+		this.zpos = z;
 	}
 
 }

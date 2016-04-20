@@ -66,6 +66,12 @@ public class Game {
 		return world;
 	}
 	
+	public void AITick(){
+		for(int i = 0; i < getWorld().getSpriteList().size(); ++i){
+			getWorld().getSpriteList().get(i).makeDecision();
+		}
+	}
+	
 	public void gunFX(){
 		musPlayer.play(new SFX("res/laserfire02.wav"));
 	}

@@ -37,11 +37,28 @@ public class Physics {
 	}
 	
 	public void tick(){
+		game.AITick();
 		this.parseInput(this.player);
 		this.calculatePhys();
 	}
 	
 	public void calculatePhys(){
+		for(int i = 0; i < game.getWorld().getSpriteList().size(); ++i){
+			Sprite enemy = game.getWorld().getSpriteList().get(i);
+			double[] intendedPosition = new double[3];
+			//friction
+			enemy.setAccelX(enemy.getAccelX()*frictionConstant);
+			enemy.setAccelY(enemy.getAccelY()*frictionConstant);
+			intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
+			intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
+			intendedPosition[2] = enemy.getZPos() + enemy.getAccelZ();
+			if(!collisionCheck(intendedPosition, false)){
+				enemy.setPosition(intendedPosition[0], intendedPosition[1]);
+				enemy.setZ(intendedPosition[2]);
+			}
+			else
+				player.setAccelZ(0);
+		}
 		validateHeight();
 		double[] intendedPosition = new double[3];
 		//friction
