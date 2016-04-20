@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JFrame;
 
+import audio.MusicPlayer;
+import audio.SFX;
 import game.Game;
 import game.Player;
 import rendering.Camera;
@@ -40,10 +42,6 @@ public class Physics {
 	}
 	
 	public void calculatePhys(){
-		Sprite enemy = game.getScreen().getMiddlePixelSprite();
-		if(input.getMouseClicked() &&  enemy != null){
-			enemy.hit(10);
-		}
 		validateHeight();
 		double[] intendedPosition = new double[3];
 		//friction
@@ -106,6 +104,14 @@ public class Physics {
 	}
 	
 	public void mouseInput(){
+		Sprite enemy = game.getScreen().getMiddlePixelSprite();
+		if(input.getMouseClicked()){
+			game.getGun().shoot();
+			game.gunFX();
+			if(enemy != null){
+				enemy.hit(10);
+			}
+		}
 		double turn_speed = 0.01;
 		if(input.isLocked()){
 			Cursor cursor = Cursor.getDefaultCursor();
@@ -175,7 +181,7 @@ public class Physics {
 			gravity[2] = player.getZ() + (player.getAccelZ()-.001);
 			
 			if(!collisionCheck(gravity, true)){
-				player.setAccelZ(player.getAccelZ()-.001);				
+				player.setAccelZ(player.getAccelZ()-.001);
 			}
 				
 		}

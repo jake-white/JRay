@@ -22,19 +22,10 @@ public class Screen extends JPanel{
 	double frameRate;
 	int resX = 200, resY = 270;
 	Point lightSource;
-	private BufferedImage gun;
 	private Sprite middlePixelSprite;
 	
 	public Screen(Game game){
 		super();
-		gun = null;
-		try {
-			File file = new File("res/wuz1.png");
-			gun = ImageIO.read(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		this.currentGame = game;
 		this.render = new Raycaster(game);
 	}
@@ -143,11 +134,11 @@ public class Screen extends JPanel{
 					Sprite workingSprite = (Sprite) stripList.get(i);
 					if(workingSprite.isVisible()){
 						int x1 = workingSprite.getX(), y1 = workingSprite.getY();
-						int x2 = x1 + (int) Math.round(this.getHeight()/workingSprite.getDistance());
-						int y2 = y1 + (int) Math.round(this.getHeight()/workingSprite.getDistance());
-						g2d.drawImage(workingSprite.getImage(), x1, y1, (int) Math.round(this.getHeight()/workingSprite.getDistance())
-								, (int) Math.round(this.getHeight()/workingSprite.getDistance()), null);
+						int x2 = x1 + (int)(workingSprite.getWidth());
+						int y2 = y1 + (int)(workingSprite.getHeight());
+						g2d.drawImage(workingSprite.getImage(), x1, y1, workingSprite.getWidth(), workingSprite.getHeight(), null);
 						if(x1 <= this.getWidth()/2 && y1 <= this.getHeight()/2 && x2 >= this.getWidth()/2 && y2 >= this.getHeight()/2){
+							System.out.println("HIT");
 							//it is in the center of the crosshairs. this is dumb.
 							middlePixelSprite = workingSprite;
 						}
@@ -165,7 +156,7 @@ public class Screen extends JPanel{
 					}
 				}
 			}
-			g2d.drawImage(gun, 0, this.getHeight()/2, this.getWidth(),this.getHeight()/2, null);
+			g2d.drawImage(currentGame.getGun().getImage(), this.getWidth()/4, this.getHeight()/2, this.getWidth()/2,this.getHeight()/2, null);
 		}
 		catch(Exception e){
 			//e.printStackTrace();

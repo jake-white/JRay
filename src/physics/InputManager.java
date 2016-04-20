@@ -15,7 +15,7 @@ import java.util.Set;
 import javax.swing.JFrame;
 
 public class InputManager implements KeyListener, MouseListener{
-	boolean mouseLocked = false, mouseClicked = true;
+	boolean mouseLocked = false, mouseClicked = false;
 	private final static Set<Integer> keyevents = new HashSet<Integer>();
 
 	public boolean input(int key) {
@@ -23,46 +23,19 @@ public class InputManager implements KeyListener, MouseListener{
 
 	}
 
-	public void keyPressed(KeyEvent arg0) {
-		Component thing = (Component) arg0.getSource();
-		if(thing instanceof JFrame && arg0.getKeyCode()==KeyEvent.VK_ESCAPE){
+	public void keyPressed(KeyEvent thisEvent) {
+		Component thing = (Component) thisEvent.getSource();
+		if(thing instanceof JFrame && thisEvent.getKeyCode()==KeyEvent.VK_ESCAPE){
 			JFrame frame = (JFrame) thing;
 			mouseLocked = false;
 			Cursor cursor = Cursor.getDefaultCursor();
 			frame.getContentPane().setCursor(cursor);
 		}
-		keyevents.add(arg0.getKeyCode());
+		keyevents.add(thisEvent.getKeyCode());
 	}
 
-	public void keyReleased(KeyEvent arg0) {
-		keyevents.remove(arg0.getKeyCode());
-	}
-
-	public void keyTyped(KeyEvent arg0) {
-
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		Component thing = (Component) arg0.getSource();
-		if(thing instanceof JFrame && !mouseLocked){
-
-			Robot bot;
-			try {
-				bot = new Robot();
-				int sourceX = thing.getX()+thing.getWidth()/2;
-				int sourceY = thing.getY()+thing.getHeight()/2;
-				bot.mouseMove(sourceX, sourceY);
-				System.out.println("click");
-				mouseLocked = true;
-			} catch (AWTException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else if(thing instanceof JFrame){
-			mouseClicked = true;
-		}
+	public void keyReleased(KeyEvent thisEvent) {
+		keyevents.remove(thisEvent.getKeyCode());
 	}
 	
 	public boolean getMouseClicked(){
@@ -73,30 +46,58 @@ public class InputManager implements KeyListener, MouseListener{
 		else return false;
 	}
 
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		
-	}
 	
 	public boolean isLocked(){
 		return mouseLocked;
 	}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mousePressed(MouseEvent thisEvent) {
+		Component thing = (Component) thisEvent.getSource();
+		if(thing instanceof JFrame && !mouseLocked){
+
+			Robot bot;
+			try {
+				bot = new Robot();
+				int sourceX = thing.getX()+thing.getWidth()/2;
+				int sourceY = thing.getY()+thing.getHeight()/2;
+				bot.mouseMove(sourceX, sourceY);
+				mouseLocked = true;
+			} catch (AWTException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(thing instanceof JFrame){
+			mouseClicked = true;
+		}
 		
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void mouseReleased(MouseEvent thisEvent) {
+		Component thing = (Component) thisEvent.getSource();
+		if(thing instanceof JFrame){
+			mouseClicked = false;
+		}
+	}
+
+	public void keyTyped(KeyEvent thisEvent) {
+		//nothing to see here.
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void mouseClicked(MouseEvent thisEvent) {
+		//nothing to see here.
+	}
+	
+	@Override
+	public void mouseEntered(MouseEvent thisEvent) {
+		//nothing to see here.
+	}
+
+	@Override
+	public void mouseExited(MouseEvent thisEvent) {
+		//nothing to see here.
 	}
 }

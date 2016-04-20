@@ -5,11 +5,15 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import audio.MusicPlayer;
+import audio.SFX;
 import physics.InputManager;
 import physics.Physics;
 import rendering.Camera;
 import rendering.Screen;
+import rendering.Sprite;
 import rendering.Tick;
+import rendering.Weapon;
 import rendering.World;
 
 public class Game {
@@ -20,6 +24,8 @@ public class Game {
 	Camera playerCam;
 	Player player;
 	static Game newGame;
+	private Weapon gun;
+	private MusicPlayer musPlayer;
 	
 	public static void main(String[] args){
 		newGame = new Game();
@@ -37,6 +43,8 @@ public class Game {
 		mainFrame.setVisible(true);
 		mainFrame.setTitle("JRay");
 		world = new World(this, "res/world.png");
+		gun = new Weapon("gun");
+		musPlayer = new MusicPlayer();
 		System.out.println("Started game!");
 		currentScreen.rayCast();
 		gameLoop = new Timer(1, new Tick(this, mainFrame));
@@ -58,10 +66,18 @@ public class Game {
 		return world;
 	}
 	
+	public void gunFX(){
+		musPlayer.play(new SFX("res/laserfire02.wav"));
+	}
+	
 	public void render(long frames){
 		currentScreen.rayCast();
 		currentScreen.setFrameRate(frames);
 		mainFrame.repaint();
+	}
+
+	public Weapon getGun() {
+		return gun;
 	}
 	
 

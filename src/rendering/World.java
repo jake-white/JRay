@@ -67,7 +67,7 @@ public class World {
 					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1]);
 				}
 				if(configMap[colorAtCoord.getAlpha()][2]==1){
-					spriteSet.add(new Sprite(x, y, "res/yanmega.png", currentGame.getCamera(), this.currentGame));
+					spriteSet.add(new Sprite(x, y, "res/zombie.png", currentGame.getCamera(), this.currentGame));
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package rendering;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -10,14 +11,16 @@ import game.Game;
 import game.Player;
 
 public class Sprite extends Strip{
-	private BufferedImage img;
+	private BufferedImage img, nextAnim;
 	private String fileName;
 	private Camera c;
-	private double x, y;
+	private double x, y, zpos = 1;
 	private Game game;
 	//actual game values now
-	private double hp = 20, attack;
-	private boolean alive = true;
+	private double hp = 20, attack, ratio;
+	private boolean alive = true , hasAnimated = true;
+	private final int animDuration = 15;
+	private int ticksSinceHit = animDuration;
 	
 	public Sprite(double x, double y, String fileName, Camera c, Game game){
 		super(0, 0, 0, 0, 0, null);
@@ -28,6 +31,7 @@ public class Sprite extends Strip{
 		this.fileName = fileName;
 		try {
 			img = ImageIO.read(new File(fileName));
+			this.ratio = (double) (img.getHeight())/(img.getWidth());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,12 +40,31 @@ public class Sprite extends Strip{
 	
 	public void hit(double attack){ //this sprite is getting shot at
 		this.hp-=attack;
-		if(hp <= 0)
+		ticksSinceHit = 0;
+		//we have to manually clone this image so that they are separate references to different data
+		nextAnim = new BufferedImage(img.getColorModel(), img.copyData(null), img.getColorModel().isAlphaPremultiplied(), null);
+		for(int x = 0; x < img.getWidth(); ++x){
+			for(int y = 0; y < img.getHeight(); ++y){
+				if((new Color(img.getRGB(x, y), true).getAlpha() == 255)){
+					int r = new Color(img.getRGB(x, y)).getRed();
+					int g = (int) (new Color(img.getRGB(x, y)).getGreen()*0.5);
+					int b = (int) (new Color(img.getRGB(x, y)).getBlue()*0.5);
+					Color newColor = new Color(r,g,b);
+					nextAnim.setRGB(x, y, newColor.getRGB());
+				}
+			}
+		}
+		if(hp <= 0){
 			alive = false;
+		}
 	}
 	
 	public BufferedImage getImage(){
-		return this.img;
+		if(ticksSinceHit < animDuration){
+			++ticksSinceHit;
+			return this.nextAnim;
+		}
+		else return this.img;
 	}
 	
 	public double getRelativeAngle(){
@@ -87,7 +110,7 @@ public class Sprite extends Strip{
 	}
 	
 	public int getY(){
-		return (int) Math.round(this.game.getScreen().getHeight()/2 + this.getHeight()*(c.getHeight()-1));
+		return (int) Math.round(this.game.getScreen().getHeight()/2 + (this.getHeight()/2)*(c.getHeight()-1) - this.getZPos()*this.getHeight()/2);
 	}
 	
 	public double getDistance(){
@@ -96,15 +119,20 @@ public class Sprite extends Strip{
 	
 	@Override
 	public Double getCast(){
-		return (double) this.getHeight();
+		return (double) game.getScreen().getHeight()/this.getDistance();
+	}
+	
+	public double getZPos(){
+		return zpos - 0.5;
 	}
 	
 	public int getHeight(){
-		return (int) Math.round(this.game.getScreen().getHeight()/this.getDistance());
+		double height = img.getHeight()*10;
+		return (int) Math.round((height/this.getDistance()));
 	}
 	
 	public int getWidth(){
-		return this.getHeight();
+		return (int) (this.getHeight()*ratio);
 	}
 
 }
