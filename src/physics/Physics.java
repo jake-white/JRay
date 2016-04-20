@@ -43,22 +43,35 @@ public class Physics {
 	}
 	
 	public void calculatePhys(){
+		boolean music = false;
 		for(int i = 0; i < game.getWorld().getSpriteList().size(); ++i){
 			Sprite enemy = game.getWorld().getSpriteList().get(i);
-			double[] intendedPosition = new double[3];
-			//friction
-			enemy.setAccelX(enemy.getAccelX()*frictionConstant);
-			enemy.setAccelY(enemy.getAccelY()*frictionConstant);
-			intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
-			intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
-			intendedPosition[2] = enemy.getZPos() + enemy.getAccelZ();
-			if(!collisionCheck(intendedPosition, false)){
-				enemy.setPosition(intendedPosition[0], intendedPosition[1]);
-				enemy.setZ(intendedPosition[2]);
+			if(enemy.isAlive()){
+				double[] intendedPosition = new double[3];
+				//friction
+				enemy.setAccelX(enemy.getAccelX()*frictionConstant);
+				enemy.setAccelY(enemy.getAccelY()*frictionConstant);
+				intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
+				intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
+				intendedPosition[2] = enemy.getZPos();
+				if(!collisionCheck(enemy, intendedPosition, false)){
+					enemy.setPosition(intendedPosition[0], intendedPosition[1]);
+					enemy.setZ(intendedPosition[2]);
+				}
+				else
+					enemy.setAccelZ(0);
+				if(enemy.isInAttackingRadius() && enemy.isAlive())
+					enemy.attack(player, 5);
+				if(enemy.isInMusicRadius()){
+					music = true;
+				}
 			}
-			else
-				player.setAccelZ(0);
 		}
+		if(music){
+			game.playBattleMusic();
+		}
+		else
+			game.stopBattleMusic();
 		validateHeight();
 		double[] intendedPosition = new double[3];
 		//friction
@@ -76,15 +89,32 @@ public class Physics {
 			
 	}
 	
+	//checking the player
 	public boolean collisionCheck(double[] intended, boolean gravity){
 		Tile[][] tiles = game.getWorld().getTiles();
-		Player intendedPlayer = new Player();
+		Player intendedPlayer = new Player(game);
 		intendedPlayer.setPosition(intended[0], intended[1]);
 		intendedPlayer.setZ(intended[2]);
 		boolean hasCollidedYet = false;
 		for(int x = 0; x < tiles.length; ++x){
 			for(int y = 0; y < tiles[x].length; ++y){
 				if(this.isColliding(intendedPlayer, tiles[x][y], x, y, intended, gravity)){
+					hasCollidedYet = true;
+				}
+			}
+		}
+		return hasCollidedYet;
+	}
+	
+	//checking enemies
+	public boolean collisionCheck(Sprite enemy, double[] intended, boolean gravity){
+		Tile[][] tiles = game.getWorld().getTiles();
+		Sprite intendedEnemy = new Sprite(intended[0], intended[1], enemy.getFileName(), game.getCamera(), game);
+		intendedEnemy.setZ(intended[2]);
+		boolean hasCollidedYet = false;
+		for(int x = 0; x < tiles.length; ++x){
+			for(int y = 0; y < tiles[x].length; ++y){
+				if(this.isColliding(enemy, intendedEnemy, tiles[x][y], x, y, intended, gravity)){
 					hasCollidedYet = true;
 				}
 			}
@@ -99,8 +129,6 @@ public class Physics {
 			if(player.getBottom() < tile.getTop() && player.getTop() > tile.getTop()){
 				//if it's intersecting it z-position wise
 				if(Math.abs(tile.getTop() - player.getBottom()) <= stairThreshold && !gravity){
-					System.out.println(player.getBottom() + " VS " + tile.getTop());
-					System.out.println(Math.abs(player.getBottom() - tile.getTop()));
 					this.player.setPosition(intended[0], intended[1]);
 					this.player.setZ(tile.getTop());
 					this.player.setAccelZ(0);
@@ -113,6 +141,33 @@ public class Physics {
 				return true;
 			}
 			else if(player.getBottom() >= tile.getBottom() && player.getTop() <= tile.getTop() && !gravity){
+				//if the player is completely within the tile
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//is the enemy colliding
+	public boolean isColliding(Sprite enemy, Sprite intendedEnemy, Tile tile, int x, int y, double[] intended, boolean gravity){
+		if((int) Math.floor(intendedEnemy.getPositionX()) == x && (int) Math.floor(intendedEnemy.getPositionY()) == y
+				&& !(tile.getType().equals(TileType.EMPTY) || tile.getType().equals(TileType.PLAYER))){
+			//if within x and y is isn't an empty tile
+			if(intendedEnemy.getBottom() < tile.getTop() && intendedEnemy.getTop() > tile.getTop()){
+				//if it's intersecting it z-position wise
+				if(Math.abs(tile.getTop() - player.getBottom()) <= stairThreshold && !gravity){
+					enemy.setPosition(intended[0], intended[1]);
+					enemy.setZ(tile.getTop());
+					enemy.setAccelZ(0);
+					return true;
+				}
+				return true;
+			}
+			else if(intendedEnemy.getBottom() < tile.getBottom() && intendedEnemy.getTop() > tile.getBottom() && !gravity){
+				enemy.setZ(tile.getBottom());
+				return true;
+			}
+			else if(intendedEnemy.getBottom() >= tile.getBottom() && intendedEnemy.getTop() <= tile.getTop() && !gravity){
 				//if the player is completely within the tile
 				return true;
 			}

@@ -16,13 +16,15 @@ public class Sprite extends Strip{
 	private String fileName;
 	private Camera c;
 	private double x, y, zpos = 1;
-	double[] accel = new double[3];
+	double[] accel = {0,0,0};
 	private Game game;
 	//actual game values now
 	private double hp = 20, attack, ratio;
 	private boolean alive = true , hasAnimated = true;
 	private final int animDuration = 15;
 	private int ticksSinceHit = animDuration;
+	private double walk_speed = 0.06;
+	private final double radius = 10;
 	
 	public Sprite(double x, double y, String fileName, Camera c, Game game){
 		super(0, 0, 0, 0, 0, null);
@@ -33,13 +35,15 @@ public class Sprite extends Strip{
 		this.fileName = fileName;
 		try {
 			img = ImageIO.read(new File(fileName));
-			this.ratio = (double) (img.getHeight())/(img.getWidth());
+			this.ratio = (double) (img.getWidth())/(img.getHeight());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+	public String getFileName(){
+		return fileName;
+	}
 	public void hit(double attack){ //this sprite is getting shot at
 		this.hp-=attack;
 		ticksSinceHit = 0;
@@ -95,14 +99,13 @@ public class Sprite extends Strip{
 	}
 	
 	public double getCameraRelAngle(){
-		return c.getAngle() - getRelativeAngle();
+		return RayPoint.validateAngleDiff(c.getAngle(), getRelativeAngle());
 	}
 	
 	public boolean isVisible(){
 		if(Math.abs(this.getX()) > game.getScreen().getWidth() || this.getX() < -this.getWidth())
 			return false;
 		else if(!isAlive())	return false;
-		System.out.println("visible");
 		return true;
 	}
 	
@@ -111,13 +114,12 @@ public class Sprite extends Strip{
 	}
 	
 	public double getAngle(){
-		System.out.println(x + ", " + y + " " + getRelativeAngle());
 		return RayPoint.validateAngle(Math.PI + getRelativeAngle()); //pointing towards camera at all times
 	}
 	
 	public void makeDecision(){
-		if(isAlive()){
-			walk(0.02);
+		if(isAlive() && isInWalkingRadius()){
+			walk(walk_speed);
 		}
 	}
 
@@ -174,13 +176,20 @@ public class Sprite extends Strip{
 		return (int) Math.round(this.game.getScreen().getHeight()/2 + (this.getHeight()/2)*(c.getHeight()-1) - this.getZPos()*this.getHeight()/2);
 	}
 	
-	public double getDistance(){
+	public double getVisualDistance(){
+		//this one incorporates fisheye for the purpose of realistic, relative viewing to work with its surroundings
+		double fisheye = Math.cos(Math.abs(getCameraRelAngle()));
+		return RayPoint.distanceTo(x, y, c.getX(), c.getY())*fisheye;
+	}
+	
+	public double getActualDistance(){
+		//this one is plain actual distance for radius, attacks, etc. that aren't visual-based
 		return RayPoint.distanceTo(x, y, c.getX(), c.getY());
 	}
 	
 	@Override
 	public Double getCast(){
-		return (double) game.getScreen().getHeight()/this.getDistance();
+		return (double) game.getScreen().getHeight()/this.getVisualDistance();
 	}
 	
 	public double getZPos(){
@@ -189,7 +198,7 @@ public class Sprite extends Strip{
 	
 	public int getHeight(){
 		double height = img.getHeight()*10;
-		return (int) Math.round((height/this.getDistance()));
+		return (int) Math.round((height/this.getVisualDistance()));
 	}
 	
 	public int getWidth(){
@@ -201,7 +210,7 @@ public class Sprite extends Strip{
 	}
 
 	public double getPositionY() {
-		return x;
+		return y;
 	}
 
 	public void setPosition(double x, double y) {
@@ -210,7 +219,28 @@ public class Sprite extends Strip{
 	}
 
 	public void setZ(double z) {
-		this.zpos = z;
+		this.zpos = z + 0.5;
+	}
+
+	public boolean isInMusicRadius() {
+		return this.getActualDistance() < radius;
+	}
+
+	public boolean isInWalkingRadius() {
+		return this.getActualDistance() < radius && this.getActualDistance() >= 1;
+	}
+	
+	public boolean isInAttackingRadius(){
+		return this.getActualDistance() <= 1;
+	}
+	public double getBottom() {
+		return zpos;
+	}
+	public double getTop() {
+		return zpos - 1;
+	}
+	public void attack(Player player, int dmg) {
+		player.damage(player.getHP());
 	}
 
 }

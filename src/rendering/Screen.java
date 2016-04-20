@@ -138,7 +138,6 @@ public class Screen extends JPanel{
 						int y2 = y1 + (int)(workingSprite.getHeight());
 						g2d.drawImage(workingSprite.getImage(), x1, y1, workingSprite.getWidth(), workingSprite.getHeight(), null);
 						if(x1 <= this.getWidth()/2 && y1 <= this.getHeight()/2 && x2 >= this.getWidth()/2 && y2 >= this.getHeight()/2){
-							System.out.println("HIT");
 							//it is in the center of the crosshairs. this is dumb.
 							middlePixelSprite = workingSprite;
 						}
@@ -172,6 +171,13 @@ public class Screen extends JPanel{
 		g2d.drawLine(this.getWidth()/2 - 20,  this.getHeight()/2, this.getWidth()/2 - 5, this.getHeight()/2);
 		g2d.drawLine(this.getWidth()/2,  this.getHeight()/2 - 20, this.getWidth()/2, this.getHeight()/2 - 5);
 		g2d.drawLine(this.getWidth()/2,  this.getHeight()/2 + 20, this.getWidth()/2, this.getHeight()/2 + 5);
+		
+		if(currentGame.isOver()){
+			g2d.setColor(Color.RED);
+			g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("GAME OVER", this.getWidth()/3, this.getHeight()/2);
+		}
 	}
 	
 	public void rayCast(){

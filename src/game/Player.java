@@ -7,8 +7,11 @@ public class Player {
 	double height  = 1;
 	double[] accel = new double[3];
 	RayPoint position;
+	private double hp = 20;
+	private Game game;
 	
-	public Player(){
+	public Player(Game game){
+		this.game = game;
 		position = new RayPoint();
 	}
 	
@@ -18,6 +21,7 @@ public class Player {
 	
 	public void turn(double inc){
 		angle+= inc;
+		angle = RayPoint.validateAngle(angle);
 	}
 	
 	public RayPoint getPosition(){
@@ -119,5 +123,15 @@ public class Player {
 	
 	public String toString(){
 		return position.toString() + ": " + this.z;
+	}
+
+	public void damage(double dmg) {
+		this.hp  -= dmg;
+		if(hp <= 0)
+			game.over();
+	}
+
+	public double getHP() {
+		return hp;
 	}
 }

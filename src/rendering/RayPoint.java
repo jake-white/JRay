@@ -35,6 +35,17 @@ public class RayPoint extends Point2D.Double{
 	    return angle;
 	}
 	
+	public static double validateAngleDiff(double angle, double angle2){ //needs to be within -pi and pi
+		angle = RayPoint.validateAngle(angle);
+		angle2 = RayPoint.validateAngle(angle2);
+		double baseDiff = angle - angle2;
+	    while(baseDiff >= Math.PI)
+	    	baseDiff -= Math.PI*2;
+	    while(baseDiff <= -Math.PI)
+	    	baseDiff += Math.PI*2;
+	    return baseDiff;
+	}
+	
 
     public static double distanceTo(double x1, double y1, double  x2, double y2){
         return Math.sqrt(Math.pow(y1 - y2, 2) + Math.pow(x1 - x2, 2));

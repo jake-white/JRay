@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
+import audio.Music;
 import audio.MusicPlayer;
 import audio.SFX;
 import physics.InputManager;
@@ -26,6 +27,8 @@ public class Game {
 	static Game newGame;
 	private Weapon gun;
 	private MusicPlayer musPlayer;
+	private boolean musicPlaying = false;
+	private boolean over = false;
 	
 	public static void main(String[] args){
 		newGame = new Game();
@@ -33,7 +36,7 @@ public class Game {
 	
 	public Game(){
 		currentScreen = new Screen(this);
-		player = new Player();
+		player = new Player(this);
 		playerCam = new Camera(player);
 		//setting up the JFrame
 		mainFrame = new JFrame();
@@ -76,6 +79,18 @@ public class Game {
 		musPlayer.play(new SFX("res/laserfire02.wav"));
 	}
 	
+	public void playBattleMusic(){
+		if(!musicPlaying){
+			musicPlaying = true;
+			musPlayer.play(new Music("res/battleThemeA.wav"));
+		}
+	}
+
+	public void stopBattleMusic() {
+		musPlayer.stopMusic();
+		musicPlaying = false;
+	}
+	
 	public void render(long frames){
 		currentScreen.rayCast();
 		currentScreen.setFrameRate(frames);
@@ -84,6 +99,14 @@ public class Game {
 
 	public Weapon getGun() {
 		return gun;
+	}
+
+	public void over() {
+		over = true;
+	}
+	
+	public boolean isOver(){
+		return over;
 	}
 	
 

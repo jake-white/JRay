@@ -9,22 +9,49 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class MusicPlayer {
+	Clip currentlyPlaying = null;
+	boolean playingMusic = false;
+	
+	
 	public MusicPlayer(){
 		
 	}
 	
 	public void play(SFX clip){
 		Clip effect = null;
-		try {
-			AudioInputStream aIS = AudioSystem.getAudioInputStream(clip.getFile());
-			effect = AudioSystem.getClip();
-			effect.open(aIS);
-		} catch (LineUnavailableException | IOException
+		if(!(clip instanceof Music)){ //if it's an effect
+			try {
+				AudioInputStream aIS = AudioSystem.getAudioInputStream(clip.getFile());
+				effect = AudioSystem.getClip();
+				effect.open(aIS);
+			} catch (LineUnavailableException | IOException
+					| UnsupportedAudioFileException e) {
+				e.printStackTrace();
+			}
+			effect.start();
+		}
+		else if(!playingMusic){
+			try {
+				System.out.println("tryna play");
+				AudioInputStream aIS = AudioSystem.getAudioInputStream(clip.getFile());
+				effect = AudioSystem.getClip();
+				effect.open(aIS);
+			} catch (LineUnavailableException | IOException
 				| UnsupportedAudioFileException e) {
 			e.printStackTrace();
 		}
-		if(clip instanceof Music)
-			effect.loop(Clip.LOOP_CONTINUOUSLY);
-		else effect.start();
+			playingMusic = true;
+			currentlyPlaying = effect;
+			currentlyPlaying.loop(Clip.LOOP_CONTINUOUSLY);
+		}
+		
+	}
+	
+	public void stopMusic(){
+		if(playingMusic){
+			playingMusic = false;
+			currentlyPlaying.stop();
+			currentlyPlaying.close();
+		}
 	}
 }
