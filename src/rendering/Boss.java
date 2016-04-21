@@ -8,7 +8,7 @@ public class Boss extends Sprite{
 
 	public Boss(double x, double y, String fileName, Camera c, Game game) {
 		super(x, y, fileName, c, game);
-		this.hp = 2000;
+		this.hp = 200;
 		this.active = false;
 	}
 

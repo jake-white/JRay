@@ -62,7 +62,7 @@ public class Physics {
 
 	public void calculatePhys(){
 		boolean music = false, bossMusic = false;
-		ArrayList<Sprite> allEnemies = game.getWorld().getSpriteList();
+		ArrayList<Sprite> allEnemies = new ArrayList<Sprite>(game.getWorld().getSpriteList());
 		allEnemies.add(game.getWorld().getBoss());
 		for(int i = 0; i < allEnemies.size(); ++i){
 			Sprite enemy = allEnemies.get(i);

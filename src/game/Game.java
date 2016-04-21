@@ -28,6 +28,7 @@ public class Game {
 	private MusicPlayer musPlayer;
 	private boolean musicPlaying = false;
 	private boolean over = false;
+	private int ticksSinceBossActive = 0;
 	
 	public static void main(String[] args){
 		new Game();
@@ -90,9 +91,9 @@ public class Game {
 	}
 	
 	public void playBossMusic(){
-		System.out.println("ayyyy");
-		if(!musicPlaying){
-			System.out.println("ayyyyaaaaaaaaaaaaa");
+		System.out.println("ayy");
+		ticksSinceBossActive++;
+		if(!musicPlaying && ticksSinceBossActive > 100){	
 			musicPlaying = true;
 			musPlayer.play(new Music("res/noescape.wav"));
 		}

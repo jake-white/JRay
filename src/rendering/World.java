@@ -20,10 +20,10 @@ public class World {
 	private ArrayList<Sprite> spriteSet;
 	double[][] configMap;
 	private Color playerInsertion;
-	private Point light;
+	private ArrayList<Point> lights;
 	private Game currentGame;
 	int width, height;
-	boolean playerFound = false, lightFound = false;
+	boolean playerFound = false;
 	private Boss boss;
 	private int bossAlpha = 241, activationAlpha = 240, risingAlpha = 239;
 	private ArrayList<Tile> activationTiles;
@@ -46,6 +46,7 @@ public class World {
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
 		spriteSet = new ArrayList<Sprite>();
+		lights = new ArrayList<Point>();
 		activationTiles = new ArrayList<Tile>();
 		risingTiles = new ArrayList<Tile>();
 		tileSet = new Tile[width][height];
@@ -64,10 +65,9 @@ public class World {
 					
 					tileSet[x][y] = new Tile(TileType.EMPTY);
 				}
-				else if(colorAtCoord.equals(Color.YELLOW)){
-					lightFound = true;
-					tileSet[x][y] = new Tile(colorAtCoord, 1, 2, x, y);
-					light = new Point(x, y);
+				else if(new Color(colorAtCoord.getRGB(), false).equals(Color.YELLOW)){
+					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1], x, y);
+					lights.add(new Point(x, y));
 				}
 				else{
 					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1], x, y);
@@ -91,9 +91,8 @@ public class World {
 			playerFound = true;
 			currentGame.getPlayer().setPosition(10, 10);
 		}
-		if(!lightFound){
-			lightFound = true;
-			light = new Point(10, 10);			
+		if(lights.isEmpty()){
+			lights.add(new Point(10, 10));			
 		}
 			
 	}
@@ -122,8 +121,8 @@ public class World {
 		return tileSet[(int)x][(int)y];
 	}
 	
-	public Point getLightSource(){
-		return light;
+	public ArrayList<Point> getLightSources(){
+		return lights;
 	}
 	
 	public ArrayList<Sprite> getSpriteList(){

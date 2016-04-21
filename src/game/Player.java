@@ -149,7 +149,6 @@ public class Player {
 			if(!inScene){
 				inScene = true;
 				canMove = false;
-				hasTurned = 0;
 			}
 			else{
 				if(this.angle < 0.1 || this.angle > 6.2)
@@ -167,9 +166,7 @@ public class Player {
 						canMove = true;
 						sceneDone = true;
 						inScene = false;
-						game.getWorld().getRisingTiles();
 						game.getWorld().getBoss().activate();
-						game.playBossMusic();
 					}
 				}
 				else this.turn(0.01);

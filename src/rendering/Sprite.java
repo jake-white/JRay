@@ -198,7 +198,7 @@ public class Sprite extends Strip{
 	}
 	
 	public int getHeight(){
-		double height = img.getHeight()*10;
+		double height = game.getScreen().getHeight();
 		return (int) Math.round((height/this.getVisualDistance()));
 	}
 	

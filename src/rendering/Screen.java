@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -21,7 +22,7 @@ public class Screen extends JPanel{
 	Raycaster render;
 	double frameRate;
 	int resX = 200, resY = 270;
-	Point lightSource;
+	ArrayList<Point> lightSources;
 	private Sprite middlePixelSprite;
 	
 	public Screen(Game game){
@@ -53,7 +54,7 @@ public class Screen extends JPanel{
 		Tile lastTile = new Tile(TileType.EMPTY);
 		ArrayList<Strip> stripList = new ArrayList<Strip>();
 		try {
-			lightSource = this.currentGame.getWorld().getLightSource();
+			lightSources = this.currentGame.getWorld().getLightSources();
 			/* Painting the screen from raycasting data for this frame
 			 * Given: two arraylists. One of heights, one of points
 			 */
@@ -80,7 +81,7 @@ public class Screen extends JPanel{
 							columnHeight = this.getHeight()/distanceList.get(j);
 						g2d.setColor(thisColor);
 						double castedHeight = columnHeight;
-						Color adjustedColor = transformColor(thisColor, RayPoint.distanceTo(currentMap.getX(), currentMap.getY(), lightSource.getX(), lightSource.getY()));
+							Color adjustedColor = transformColor(thisColor, currentMap, lightSources);
 						double gapAdjustment = castedHeight*thisGap;
 						//calculating first and last points of the columns
 							double firstPoint = 0;
@@ -129,7 +130,6 @@ public class Screen extends JPanel{
 			stripList.addAll(this.currentGame.getWorld().getSpriteList());
 			Boss b = currentGame.getWorld().getBoss();
 			if(b.isActive()){
-				System.out.println("ACTIVE");
 				stripList.add(b);
 			}
 			Collections.sort(stripList, new StripComparator());
@@ -193,9 +193,14 @@ public class Screen extends JPanel{
 		return middlePixelSprite;
 	}
 	
-	public Color transformColor(Color original, double distance){
-		if(distance > 0){
-		double intensity = 1 - distance/15;
+	public Color transformColor(Color original, Point current, ArrayList<Point> lightSources){
+		double intensity = 1;
+		ArrayList<Double> distances = new ArrayList<Double>();
+		for(int i = 0; i < lightSources.size(); ++i){
+			distances.add(RayPoint.distanceTo(current.getX(), current.getY(), lightSources.get(i).getX(), lightSources.get(i).getY()));
+		}
+		Collections.sort(distances);
+		intensity -= distances.get(0)/15;
 		if(intensity > 1)
 			intensity = 1;
 		else if(intensity < 0.3)
@@ -211,9 +216,6 @@ public class Screen extends JPanel{
 		if(green > 255)
 			green = 255;
 		return new Color(red, green, blue);
-		}
-		else
-			return original;
 	}
 	
 	public void setFrameRate(double frames){
