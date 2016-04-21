@@ -18,20 +18,19 @@ import rendering.Weapon;
 import rendering.World;
 
 public class Game {
-	Screen currentScreen;
-	Timer gameLoop;
-	World world;
-	JFrame mainFrame; //hacking the mainframe with a visual basic GUI
-	Camera playerCam;
-	Player player;
-	static Game newGame;
+	private Screen currentScreen;
+	private Timer gameLoop;
+	private World world;
+	private JFrame mainFrame; //hacking the mainframe with a visual basic GUI
+	private Camera playerCam;
+	private Player player;
 	private Weapon gun;
 	private MusicPlayer musPlayer;
 	private boolean musicPlaying = false;
 	private boolean over = false;
 	
 	public static void main(String[] args){
-		newGame = new Game();
+		new Game();
 	}
 	
 	public Game(){
@@ -78,11 +77,24 @@ public class Game {
 	public void gunFX(){
 		musPlayer.play(new SFX("res/laserfire02.wav"));
 	}
+
+	public void playSFX(SFX sfx) {
+		musPlayer.play(sfx);
+	}
 	
 	public void playBattleMusic(){
 		if(!musicPlaying){
 			musicPlaying = true;
 			musPlayer.play(new Music("res/battleThemeA.wav"));
+		}
+	}
+	
+	public void playBossMusic(){
+		System.out.println("ayyyy");
+		if(!musicPlaying){
+			System.out.println("ayyyyaaaaaaaaaaaaa");
+			musicPlaying = true;
+			musPlayer.play(new Music("res/noescape.wav"));
 		}
 	}
 

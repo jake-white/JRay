@@ -8,6 +8,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
@@ -15,6 +16,7 @@ import audio.MusicPlayer;
 import audio.SFX;
 import game.Game;
 import game.Player;
+import rendering.Boss;
 import rendering.Camera;
 import rendering.Sprite;
 import rendering.Tile;
@@ -38,36 +40,62 @@ public class Physics {
 	
 	public void tick(){
 		game.AITick();
-		this.parseInput(this.player);
+		if(player.canMove())
+			this.parseInput(this.player);
 		this.calculatePhys();
+		this.cutsceneCheck();
 	}
 	
+	private void cutsceneCheck() {
+		boolean timeToActivate = false;
+		ArrayList<Tile> activation = game.getWorld().getActivationTiles();
+		for(int i = 0; i < activation.size(); ++i){
+			Tile thisTile = activation.get(i);
+			if(Math.floor(player.getPosition().getX()) == thisTile.getX() && Math.floor(player.getPosition().getY()) == thisTile.getY()){
+				timeToActivate = true;
+			}
+		}
+		if(timeToActivate){
+			player.cutscene();
+		}
+	}
+
 	public void calculatePhys(){
-		boolean music = false;
-		for(int i = 0; i < game.getWorld().getSpriteList().size(); ++i){
-			Sprite enemy = game.getWorld().getSpriteList().get(i);
+		boolean music = false, bossMusic = false;
+		ArrayList<Sprite> allEnemies = game.getWorld().getSpriteList();
+		allEnemies.add(game.getWorld().getBoss());
+		for(int i = 0; i < allEnemies.size(); ++i){
+			Sprite enemy = allEnemies.get(i);
 			if(enemy.isAlive()){
-				double[] intendedPosition = new double[3];
-				//friction
-				enemy.setAccelX(enemy.getAccelX()*frictionConstant);
-				enemy.setAccelY(enemy.getAccelY()*frictionConstant);
-				intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
-				intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
-				intendedPosition[2] = enemy.getZPos();
-				if(!collisionCheck(enemy, intendedPosition, false)){
-					enemy.setPosition(intendedPosition[0], intendedPosition[1]);
-					enemy.setZ(intendedPosition[2]);
+				if(!(enemy instanceof Boss)){
+					double[] intendedPosition = new double[3];
+					//friction
+					enemy.setAccelX(enemy.getAccelX()*frictionConstant);
+					enemy.setAccelY(enemy.getAccelY()*frictionConstant);
+					intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
+					intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
+					intendedPosition[2] = enemy.getZPos();
+					if(!collisionCheck(enemy, intendedPosition, false)){
+						enemy.setPosition(intendedPosition[0], intendedPosition[1]);
+						enemy.setZ(intendedPosition[2]);
+					}
+					else
+						enemy.setAccelZ(0);
+					if(enemy.isInAttackingRadius() && enemy.isAlive())
+						enemy.attack(player, 5);					
 				}
-				else
-					enemy.setAccelZ(0);
-				if(enemy.isInAttackingRadius() && enemy.isAlive())
-					enemy.attack(player, 5);
+				if(enemy instanceof Boss && ((Boss) enemy).isActive()){
+					bossMusic = true;
+				}
 				if(enemy.isInMusicRadius()){
 					music = true;
 				}
 			}
 		}
-		if(music){
+		if(bossMusic){
+			game.playBossMusic();
+		}
+		else if(music){
 			game.playBattleMusic();
 		}
 		else

@@ -127,6 +127,11 @@ public class Screen extends JPanel{
 			}
 
 			stripList.addAll(this.currentGame.getWorld().getSpriteList());
+			Boss b = currentGame.getWorld().getBoss();
+			if(b.isActive()){
+				System.out.println("ACTIVE");
+				stripList.add(b);
+			}
 			Collections.sort(stripList, new StripComparator());
 			middlePixelSprite = null;
 			for(int i = 0; i < stripList.size(); ++i){ //actually drawing stuff to the screen by distance

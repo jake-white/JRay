@@ -19,7 +19,8 @@ public class Sprite extends Strip{
 	double[] accel = {0,0,0};
 	private Game game;
 	//actual game values now
-	private double hp = 20, attack, ratio;
+	private double attack, ratio;
+	protected int hp = 20;
 	private boolean alive = true , hasAnimated = true;
 	private final int animDuration = 15;
 	private int ticksSinceHit = animDuration;
@@ -103,7 +104,7 @@ public class Sprite extends Strip{
 	}
 	
 	public boolean isVisible(){
-		if(Math.abs(this.getX()) > game.getScreen().getWidth() || this.getX() < -this.getWidth())
+		if(Math.abs(this.getCameraRelAngle()) > c.getFOV()/2)
 			return false;
 		else if(!isAlive())	return false;
 		return true;

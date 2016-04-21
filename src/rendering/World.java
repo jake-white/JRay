@@ -15,15 +15,19 @@ import game.Game;
 import rendering.Tile;
 
 public class World {
-	BufferedImage worldImg;
-	Tile[][] tileSet;
-	ArrayList<Sprite> spriteSet;
+	private BufferedImage worldImg;
+	private Tile[][] tileSet;
+	private ArrayList<Sprite> spriteSet;
 	double[][] configMap;
-	Color playerInsertion;
-	Point light;
-	Game currentGame;
+	private Color playerInsertion;
+	private Point light;
+	private Game currentGame;
 	int width, height;
 	boolean playerFound = false, lightFound = false;
+	private Boss boss;
+	private int bossAlpha = 241, activationAlpha = 240, risingAlpha = 239;
+	private ArrayList<Tile> activationTiles;
+	private ArrayList<Tile> risingTiles;
 	
 	public World(Game game, String fileName){
 		playerInsertion = new Color(255, 0, 0);
@@ -42,6 +46,8 @@ public class World {
 		this.width = worldImg.getWidth();
 		this.height = worldImg.getHeight();
 		spriteSet = new ArrayList<Sprite>();
+		activationTiles = new ArrayList<Tile>();
+		risingTiles = new ArrayList<Tile>();
 		tileSet = new Tile[width][height];
 		Color emptySpace = new Color(255, 255, 255, 0); //png transparent whitespace
 		for(int x = 0; x < width; ++x){
@@ -60,14 +66,23 @@ public class World {
 				}
 				else if(colorAtCoord.equals(Color.YELLOW)){
 					lightFound = true;
-					tileSet[x][y] = new Tile(colorAtCoord, 1, 2);
+					tileSet[x][y] = new Tile(colorAtCoord, 1, 2, x, y);
 					light = new Point(x, y);
 				}
 				else{
-					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1]);
+					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1], x, y);
 				}
 				if(configMap[colorAtCoord.getAlpha()][2]==1){
 					spriteSet.add(new Sprite(x, y, "res/zombie.png", currentGame.getCamera(), this.currentGame));
+				}
+				if(colorAtCoord.getAlpha() == bossAlpha){
+					boss = new Boss(x, y, "res/andy.png", currentGame.getCamera(), currentGame);
+				}
+				if(colorAtCoord.getAlpha() == activationAlpha){
+					activationTiles.add(tileSet[x][y]);
+				}
+				if(colorAtCoord.getAlpha() == risingAlpha){
+					risingTiles.add(tileSet[x][y]);
 				}
 			}
 		}
@@ -113,6 +128,18 @@ public class World {
 	
 	public ArrayList<Sprite> getSpriteList(){
 		return spriteSet;
+	}
+	
+	public ArrayList<Tile> getActivationTiles(){
+		return activationTiles;
+	}
+	
+	public ArrayList<Tile> getRisingTiles(){
+		return risingTiles;
+	}
+	
+	public Boss getBoss(){
+		return boss;
 	}
 	
 	public Tile getTileAt(Point p){

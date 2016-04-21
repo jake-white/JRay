@@ -1,14 +1,19 @@
 package game;
 
+import java.util.ArrayList;
+
+import audio.SFX;
 import rendering.RayPoint;
+import rendering.Tile;
 
 public class Player {
-	double z = 0, angle = 0;
+	double z = 0, angle = 0, hasTurned = 0;
 	double height  = 1;
 	double[] accel = new double[3];
 	RayPoint position;
 	private double hp = 20;
 	private Game game;
+	private boolean inScene = false, sceneDone = false, canMove = true;
 	
 	public Player(Game game){
 		this.game = game;
@@ -54,6 +59,10 @@ public class Player {
 	
 	public void setZ(double height){
 		z=height;
+	}
+	
+	public boolean canMove(){
+		return canMove;
 	}
 	
 	public double getZ(){
@@ -133,5 +142,38 @@ public class Player {
 
 	public double getHP() {
 		return hp;
+	}
+
+	public void cutscene() {
+		if(!sceneDone){
+			if(!inScene){
+				inScene = true;
+				canMove = false;
+				hasTurned = 0;
+			}
+			else{
+				if(this.angle < 0.1 || this.angle > 6.2)
+					angle = 0;
+				if(this.angle == 0){
+					boolean done = true;
+					ArrayList<Tile> rising = game.getWorld().getRisingTiles();
+					for(int i = 0; i < rising.size(); ++i){
+						rising.get(i).rise(0.01);
+						if(rising.get(i).getHeight() < 2)
+							done = false;
+					}
+					if(done){
+						game.playSFX(new SFX("res/clang.wav"));
+						canMove = true;
+						sceneDone = true;
+						inScene = false;
+						game.getWorld().getRisingTiles();
+						game.getWorld().getBoss().activate();
+						game.playBossMusic();
+					}
+				}
+				else this.turn(0.01);
+			}
+		}
 	}
 }

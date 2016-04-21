@@ -33,7 +33,6 @@ public class Weapon {
 			++state;
 		}
 		if(state >= img.length*animLength){
-			System.out.println("done");
 			state = 0;
 			isShooting = false;
 		}

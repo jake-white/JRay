@@ -6,6 +6,7 @@ public class Tile {
 	private TileType type;
 	private Color color;
 	private double height, gap;
+	private int x, y;
 	
 	public Tile(TileType type){
 		this.type = type;
@@ -16,7 +17,9 @@ public class Tile {
 		}
 	}
 	
-	public Tile(Color colorAtCoord, double tileHeight, double tileGap) {
+	public Tile(Color colorAtCoord, double tileHeight, double tileGap, int x, int y) {
+		this.x = x;
+		this.y = y;
 		this.color = colorAtCoord;
 		this.height = tileHeight;
 		this.gap = tileGap;
@@ -28,6 +31,10 @@ public class Tile {
 	
 	public TileType getType(){
 		return this.type;
+	}
+	
+	public void rise(double inc){
+		this.height += inc;
 	}
 	
 	public Color getColor(){
@@ -48,6 +55,14 @@ public class Tile {
 	
 	public double getGap(){
 		return this.gap;
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
 	}
 	
 }
