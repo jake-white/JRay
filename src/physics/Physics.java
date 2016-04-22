@@ -28,6 +28,7 @@ public class Physics {
 	InputManager input;
 	JFrame mainFrame;
 	public double frictionConstant = 0.5, stairThreshold = 0.21;
+	private double walk_speed = 0.2, jump_speed = 0.1, turn_speed = 0.01, gravity_const = 0.005;
 	
 	public Physics(Game game, JFrame mainFrame){
 		this.mainFrame = mainFrame;
@@ -211,7 +212,6 @@ public class Physics {
 				enemy.hit(10);
 			}
 		}
-		double turn_speed = 0.005;
 		if(input.isLocked()){
 			Cursor cursor = Cursor.getDefaultCursor();
 			Robot bot;
@@ -244,8 +244,6 @@ public class Physics {
 		this.mouseInput();
 
 		if(player.canMove()){
-			double walk_speed = 0.05;
-			double fly_speed = 0.04;
 			Camera camera = game.getCamera();
 			if(input.input(KeyEvent.VK_W)){
 				p.walk(walk_speed);
@@ -267,13 +265,13 @@ public class Physics {
 			}
 			if(input.input(KeyEvent.VK_SPACE)){
 				if(player.getAccelZ() == 0)
-				p.up(fly_speed);
+				p.up(jump_speed);
 			}
 		}
 	}
 	
 	private void validateHeight(){
-		if(player.getZ() < 0){
+		if(player.getZ() <= 0 && player.getAccelZ() <= 0){
 			player.setAccelZ(0);
 			player.setZ(0);
 		}
@@ -281,10 +279,10 @@ public class Physics {
 			double[] gravity = new double[3];
 			gravity[0] = player.getPosition().getX();
 			gravity[1] = player.getPosition().getY();
-			gravity[2] = player.getZ() + (player.getAccelZ()-.001);
+			gravity[2] = player.getZ() + (player.getAccelZ()-gravity_const);
 			
 			if(!collisionCheck(gravity, true)){
-				player.setAccelZ(player.getAccelZ()-.001);
+				player.setAccelZ(player.getAccelZ()-gravity_const);
 			}
 				
 		}

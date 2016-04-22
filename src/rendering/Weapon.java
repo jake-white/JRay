@@ -13,7 +13,7 @@ public class Weapon {
 	private BufferedImage[] img = new BufferedImage[4];
 	private String fileName;
 	private int state = 0;
-	private final int animLength = 5;
+	private final int animLength = 1;
 	private boolean isShooting = false;
 	
 	public Weapon(String filename){

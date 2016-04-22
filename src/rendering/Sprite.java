@@ -22,7 +22,7 @@ public class Sprite extends Strip{
 	private double attack, ratio;
 	protected int hp = 20;
 	private boolean alive = true , hasAnimated = true;
-	private final int animDuration = 15;
+	private final int animDuration = 5;
 	private int ticksSinceHit = animDuration;
 	private double walk_speed = 0.06;
 	private final double radius = 10;

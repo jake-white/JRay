@@ -7,7 +7,7 @@ import rendering.RayPoint;
 import rendering.Tile;
 
 public class Player {
-	double z = 0, angle = 0, hasTurned = 0;
+	double z = 0, angle = Math.PI/2, hasTurned = 0;
 	double height  = 1;
 	double[] accel = new double[3];
 	RayPoint position;
@@ -151,13 +151,13 @@ public class Player {
 				canMove = false;
 			}
 			else{
-				if(this.angle < 0.02 || this.angle > 6.27)
+				if(this.angle < 0.1 || this.angle > 6.2)
 					angle = 0;
 				if(this.angle == 0){
 					boolean done = true;
 					ArrayList<Tile> rising = game.getWorld().getRisingTiles();
 					for(int i = 0; i < rising.size(); ++i){
-						rising.get(i).rise(0.02);
+						rising.get(i).rise(0.1);
 						if(rising.get(i).getHeight() < 2)
 							done = false;
 					}
@@ -169,8 +169,8 @@ public class Player {
 						game.getWorld().getBoss().activate();
 					}
 				}
-				else if(this.angle > Math.PI) this.turn(0.03);
-				else if(this.angle <= Math.PI) this.turn(-0.03);
+				else if(this.angle > Math.PI) this.turn(0.1);
+				else if(this.angle <= Math.PI) this.turn(-0.1);
 			}
 		}
 	}

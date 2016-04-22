@@ -24,6 +24,14 @@ public class Tick implements ActionListener{
 		//code executed every tick
 		currentGame.render(frameRate);
 		physics.tick();
+		while((System.currentTimeMillis() - frameTime) > 0 && 1000/(System.currentTimeMillis() - frameTime) > 30){
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		long difference = System.currentTimeMillis() - frameTime;
 		if(difference == 0)
 			difference = 1;

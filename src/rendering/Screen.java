@@ -205,7 +205,7 @@ public class Screen extends JPanel{
 		g2d.setFont(new Font(null).deriveFont(20f));
 		g2d.setColor(Color.RED);
 		g2d.drawString("FPS: " + frameRate, 0, 20);
-		g2d.drawString("Player: " + currentGame.getPlayer().toString(), 0, 40);
+		g2d.drawString("HP: " + currentGame.getPlayer().getHP(), 0, 40);
 
 		g2d.setColor(Color.red);
 		g2d.drawLine(this.getWidth()/2 + 20,  this.getHeight()/2, this.getWidth()/2 + 5, this.getHeight()/2);
