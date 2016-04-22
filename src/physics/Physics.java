@@ -40,8 +40,7 @@ public class Physics {
 	
 	public void tick(){
 		game.AITick();
-		if(player.canMove())
-			this.parseInput(this.player);
+		this.parseInput(this.player);
 		this.calculatePhys();
 		this.cutsceneCheck();
 	}
@@ -87,7 +86,7 @@ public class Physics {
 				if(enemy instanceof Boss && ((Boss) enemy).isActive()){
 					bossMusic = true;
 				}
-				if(enemy.isInMusicRadius()){
+				else if(!(enemy instanceof Boss) && enemy.isInMusicRadius()){
 					music = true;
 				}
 			}
@@ -212,7 +211,7 @@ public class Physics {
 				enemy.hit(10);
 			}
 		}
-		double turn_speed = 0.01;
+		double turn_speed = 0.005;
 		if(input.isLocked()){
 			Cursor cursor = Cursor.getDefaultCursor();
 			Robot bot;
@@ -232,7 +231,8 @@ public class Physics {
 			try {
 				bot = new Robot();
 				bot.mouseMove(sourceX, sourceY);
-				player.turn(turn_speed*dx);
+				if(player.canMove())
+					player.turn(turn_speed*dx);
 			} catch (AWTException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -242,30 +242,33 @@ public class Physics {
 	
 	public void parseInput(Player p){
 		this.mouseInput();
-		double walk_speed = 0.05;
-		double fly_speed = 0.04;
-		Camera camera = game.getCamera();
-		if(input.input(KeyEvent.VK_W)){
-			p.walk(walk_speed);
-		}
-		else if(input.input(KeyEvent.VK_S)){
-			p.walk(-walk_speed);
-		}
-		if(input.input(KeyEvent.VK_A)){
-			p.strafe(walk_speed);
-		}
-		else if(input.input(KeyEvent.VK_D)){
-			p.strafe(-walk_speed);
-		}
-		if(input.input(KeyEvent.VK_R)){
-			camera.changeView(walk_speed);
-		}
-		else if(input.input(KeyEvent.VK_F)){
-			camera.changeView(-walk_speed);
-		}
-		if(input.input(KeyEvent.VK_SPACE)){
-			if(player.getAccelZ() == 0)
-			p.up(fly_speed);
+
+		if(player.canMove()){
+			double walk_speed = 0.05;
+			double fly_speed = 0.04;
+			Camera camera = game.getCamera();
+			if(input.input(KeyEvent.VK_W)){
+				p.walk(walk_speed);
+			}
+			else if(input.input(KeyEvent.VK_S)){
+				p.walk(-walk_speed);
+			}
+			if(input.input(KeyEvent.VK_A)){
+				p.strafe(walk_speed);
+			}
+			else if(input.input(KeyEvent.VK_D)){
+				p.strafe(-walk_speed);
+			}
+			if(input.input(KeyEvent.VK_R)){
+				camera.changeView(walk_speed);
+			}
+			else if(input.input(KeyEvent.VK_F)){
+				camera.changeView(-walk_speed);
+			}
+			if(input.input(KeyEvent.VK_SPACE)){
+				if(player.getAccelZ() == 0)
+				p.up(fly_speed);
+			}
 		}
 	}
 	

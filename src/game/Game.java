@@ -40,7 +40,7 @@ public class Game {
 		playerCam = new Camera(player);
 		//setting up the JFrame
 		mainFrame = new JFrame();
-		mainFrame.setSize(800, 600);
+		mainFrame.setSize(800, 450);
 		mainFrame.getContentPane().add(currentScreen);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
@@ -86,12 +86,11 @@ public class Game {
 	public void playBattleMusic(){
 		if(!musicPlaying){
 			musicPlaying = true;
-			musPlayer.play(new Music("res/battleThemeA.wav"));
+			musPlayer.play(new Music("res/battle.wav"));
 		}
 	}
 	
 	public void playBossMusic(){
-		System.out.println("ayy");
 		ticksSinceBossActive++;
 		if(!musicPlaying && ticksSinceBossActive > 100){	
 			musicPlaying = true;

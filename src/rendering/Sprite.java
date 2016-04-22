@@ -15,9 +15,9 @@ public class Sprite extends Strip{
 	private BufferedImage img, nextAnim;
 	private String fileName;
 	private Camera c;
-	private double x, y, zpos = 1;
+	private double x, y, zpos = 0;
 	double[] accel = {0,0,0};
-	private Game game;
+	protected Game game;
 	//actual game values now
 	private double attack, ratio;
 	protected int hp = 20;
@@ -26,6 +26,7 @@ public class Sprite extends Strip{
 	private int ticksSinceHit = animDuration;
 	private double walk_speed = 0.06;
 	private final double radius = 10;
+	protected double heightmod = 1;
 	
 	public Sprite(double x, double y, String fileName, Camera c, Game game){
 		super(0, 0, 0, 0, 0, null);
@@ -174,7 +175,7 @@ public class Sprite extends Strip{
 	}
 	
 	public int getY(){
-		return (int) Math.round(this.game.getScreen().getHeight()/2 + (this.getHeight()/2)*(c.getHeight()-1) - this.getZPos()*this.getHeight()/2);
+		 return (int) Math.floor(game.getScreen().getHeight()/2 + (this.getHeight()/heightmod)*(c.getHeight() - zpos - heightmod));
 	}
 	
 	public double getVisualDistance(){
@@ -198,7 +199,7 @@ public class Sprite extends Strip{
 	}
 	
 	public int getHeight(){
-		double height = game.getScreen().getHeight();
+		double height = game.getScreen().getHeight()*heightmod;
 		return (int) Math.round((height/this.getVisualDistance()));
 	}
 	

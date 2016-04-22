@@ -31,7 +31,6 @@ public class MusicPlayer {
 			effect.start();
 		}
 		else if(!playingMusic){
-			System.out.println("WTF");
 			try {
 				AudioInputStream aIS = AudioSystem.getAudioInputStream(clip.getFile());
 				effect = AudioSystem.getClip();

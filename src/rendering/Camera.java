@@ -10,6 +10,14 @@ public class Camera {
 	public Camera(Player p){
 		this.player = p;
 	}
+	
+	public double getStartingAngle(){
+		return RayPoint.validateAngle(player.getAngle()+FOV/2);
+	}
+	
+	public double getEndingAngle(){
+		return RayPoint.validateAngle(player.getAngle()-FOV/2);		
+	}
 
 	public double getAngle(){
 		return player.getAngle();

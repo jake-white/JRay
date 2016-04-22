@@ -10,10 +10,15 @@ public class Boss extends Sprite{
 		super(x, y, fileName, c, game);
 		this.hp = 200;
 		this.active = false;
+		this.heightmod = 5;
 	}
 
 	public boolean isActive() {
 		return active;
+	}
+	
+	public int getHeight(){
+		return super.getHeight();
 	}
 	
 	public void activate(){

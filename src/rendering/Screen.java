@@ -21,30 +21,62 @@ public class Screen extends JPanel{
 	Game currentGame;
 	Raycaster render;
 	double frameRate;
-	int resX = 200, resY = 270;
+	int resX = 200, resY = 112;
 	ArrayList<Point> lightSources;
 	private Sprite middlePixelSprite;
+	private BufferedImage skybox;
+	private double ppRadian; //pixels per radian of the skybox
 	
 	public Screen(Game game){
 		super();
 		this.currentGame = game;
 		this.render = new Raycaster(game);
+
+		try {
+			skybox = ImageIO.read(new File("res/skybox.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ppRadian = skybox.getWidth()/(2*Math.PI);
 	}
 	
 	@Override
 	public void paintComponent(Graphics g){
 		//Overriding the JPanel painting
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-		          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-		          RenderingHints.VALUE_RENDER_QUALITY);
+		
+		/* skybox math is kinda dumb tbh
+		 * so here goes nothing
+		 */
+		double angleStart = 2*Math.PI - currentGame.getCamera().getStartingAngle();
+		double angleEnd = 2*Math.PI - currentGame.getCamera().getEndingAngle();
+		int skyBoxStart = (int) (ppRadian*angleStart);
+		int skyBoxEnd = (int) (ppRadian*angleEnd);
+		int skyBoxLength = (int) (ppRadian*currentGame.getCamera().getFOV());
+		if(angleStart > angleEnd){
+			int firstLength = skybox.getWidth() - skyBoxStart;
+			double firstRatio = (double)(firstLength)/(double)(skyBoxLength);
+			int firstActualLength = (int) (firstRatio*this.getWidth());
+			
+			if(firstLength != 0){
+				BufferedImage firstHalf = skybox.getSubimage(skyBoxStart, 0, firstLength, skybox.getHeight());
+				g2d.drawImage(firstHalf, 0, 0, firstActualLength, this.getHeight(), null);
+			}
+			
+			if(skyBoxEnd != 0){
+				BufferedImage secondHalf = skybox.getSubimage(0, 0, skyBoxEnd, skybox.getHeight());
+				g2d.drawImage(secondHalf, firstActualLength, 0, this.getWidth()-firstActualLength, this.getHeight(), null);
+			}
+		}
+		else{
+			BufferedImage sliver = skybox.getSubimage(skyBoxStart, 0, skyBoxEnd - skyBoxStart, skybox.getHeight());
+			g2d.drawImage(sliver, 0, 0, this.getWidth(), this.getHeight(), null);
+		}
 		
 		double cameraHeight = currentGame.getCamera().getHeight();
 		double cameraAngle = currentGame.getCamera().getView();
-		g2d.setColor(Color.BLACK.brighter());
-		g2d.fillRect(0, 0, this.getWidth(), this.getHeight()/2);
-		g2d.setColor(new Color(64, 64, 64));
+		g2d.setColor(new Color(16,16,16));
 		g2d.fillRect(0, this.getHeight()/2, this.getWidth(), this.getHeight());
 		g2d.setColor(Color.BLACK);
 		g2d.drawLine(0, this.getHeight()/2, this.getWidth(), this.getHeight()/2);
@@ -160,7 +192,11 @@ public class Screen extends JPanel{
 					}
 				}
 			}
-			g2d.drawImage(currentGame.getGun().getImage(), this.getWidth()/4, this.getHeight()/2, this.getWidth()/2,this.getHeight()/2, null);
+			BufferedImage gunImage = currentGame.getGun().getImage();
+			double gunRatio = (double) (gunImage.getWidth())/(gunImage.getHeight());
+			double gunHeight = this.getHeight()/2;
+			double gunWidth = gunHeight*gunRatio;
+			g2d.drawImage(gunImage, (int) (this.getWidth()/2 - gunWidth/2), this.getHeight()/2, (int) gunWidth, (int) gunHeight, null);
 		}
 		catch(Exception e){
 			//e.printStackTrace();
