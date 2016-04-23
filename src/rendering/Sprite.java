@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import audio.SFX;
 import game.Game;
 import game.Player;
 
@@ -15,27 +16,36 @@ public class Sprite extends Strip{
 	private BufferedImage img, nextAnim;
 	private String fileName;
 	private Camera c;
-	private double x, y, zpos = 0;
+	protected double x;
+	protected double y;
+	protected double zpos = 0;
 	double[] accel = {0,0,0};
 	protected Game game;
 	//actual game values now
 	private double attack, ratio;
-	protected int hp = 20;
-	private boolean alive = true , hasAnimated = true;
+	protected int hp = 40;
+	protected boolean alive = true;
+	private boolean hasAnimated = true;
 	private final int animDuration = 5;
 	private int ticksSinceHit = animDuration;
 	private double walk_speed = 0.06;
 	private final double radius = 10;
 	protected double heightmod = 1;
+	private double lastAttack = 0, attackSpeed = 1000;
+	private SFX[] damageSounds;
 	
-	public Sprite(double x, double y, String fileName, Camera c, Game game){
+	public Sprite(double x, double y, String fileName, Game game){
 		super(0, 0, 0, 0, 0, null);
 		this.x = x;
 		this.y = y;
 		this.game = game;
-		this.c = c;
+		this.c = game.getCamera();
 		this.fileName = fileName;
+		this.damageSounds = new SFX[3];
 		try {
+			for(int i = 0; i < damageSounds.length; ++i){
+				this.damageSounds[i] = new SFX("res/sfx/damage"+(i+1)+".wav");
+			}
 			img = ImageIO.read(new File(fileName));
 			this.ratio = (double) (img.getWidth())/(img.getHeight());
 		} catch (IOException e) {
@@ -112,7 +122,7 @@ public class Sprite extends Strip{
 	}
 	
 	public boolean isAlive(){
-		return alive;
+		return alive && hp > 0;
 	}
 	
 	public double getAngle(){
@@ -195,7 +205,7 @@ public class Sprite extends Strip{
 	}
 	
 	public double getZPos(){
-		return zpos - 0.5;
+		return zpos;
 	}
 	
 	public int getHeight(){
@@ -221,7 +231,7 @@ public class Sprite extends Strip{
 	}
 
 	public void setZ(double z) {
-		this.zpos = z + 0.5;
+		this.zpos = z;
 	}
 
 	public boolean isInMusicRadius() {
@@ -233,16 +243,23 @@ public class Sprite extends Strip{
 	}
 	
 	public boolean isInAttackingRadius(){
-		return this.getActualDistance() <= 1;
+		if(Math.abs(this.getZPos() - game.getPlayer().getZ()) < 1)
+			return this.getActualDistance() <= 1;
+		else return false;
 	}
 	public double getBottom() {
 		return zpos;
 	}
 	public double getTop() {
-		return zpos - 1;
+		return zpos + heightmod;
 	}
 	public void attack(Player player, int dmg) {
-		player.damage(player.getHP());
+		if(lastAttack == 0 || System.currentTimeMillis() - lastAttack >= attackSpeed){
+			int random = (int) Math.round((Math.random()*(damageSounds.length-1)));
+			game.playSFX(damageSounds[random]);
+			player.damage(dmg);
+			lastAttack = System.currentTimeMillis();
+		}
 	}
 
 }

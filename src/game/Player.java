@@ -11,7 +11,7 @@ public class Player {
 	double height  = 1;
 	double[] accel = new double[3];
 	RayPoint position;
-	private double hp = 20;
+	private double hp = 200;
 	private Game game;
 	private boolean inScene = false, sceneDone = false, canMove = true;
 	
@@ -146,6 +146,7 @@ public class Player {
 
 	public void cutscene() {
 		if(!sceneDone){
+			game.stopBattleMusic();
 			if(!inScene){
 				inScene = true;
 				canMove = false;
@@ -162,7 +163,7 @@ public class Player {
 							done = false;
 					}
 					if(done){
-						game.playSFX(new SFX("res/clang.wav"));
+						game.playSFX(new SFX("res/sfx/clang.wav"));
 						canMove = true;
 						sceneDone = true;
 						inScene = false;

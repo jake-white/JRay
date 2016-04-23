@@ -45,7 +45,7 @@ public class Game {
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setVisible(true);
 		mainFrame.setTitle("JRay");
-		world = new World(this, "res/world.png");
+		world = new World(this, "res/sprites/world.png");
 		gun = new Weapon("gun");
 		musPlayer = new MusicPlayer();
 		System.out.println("Started game!");
@@ -73,20 +73,27 @@ public class Game {
 		for(int i = 0; i < getWorld().getSpriteList().size(); ++i){
 			getWorld().getSpriteList().get(i).makeDecision();
 		}
+		if(getWorld().getBoss().isActive()){
+			getWorld().getBoss().makeDecision();
+			for(int i = 0; i < getWorld().getProjectiles().size(); ++i){
+				if(getWorld().getProjectiles().get(i).isAlive())
+					getWorld().getProjectiles().get(i).makeDecision();
+			}
+		}
 	}
 	
 	public void gunFX(){
-		musPlayer.play(new SFX("res/laserfire02.wav"));
+		musPlayer.play(new SFX("res/sfx/laserfire02.wav"),0);
 	}
 
 	public void playSFX(SFX sfx) {
-		musPlayer.play(sfx);
+		musPlayer.play(sfx, 0);
 	}
 	
 	public void playBattleMusic(){
 		if(!musicPlaying){
 			musicPlaying = true;
-			musPlayer.play(new Music("res/battle.wav"));
+			musPlayer.play(new Music("res/music/battle.wav"), -10);
 		}
 	}
 	
@@ -94,7 +101,7 @@ public class Game {
 		ticksSinceBossActive++;
 		if(!musicPlaying && ticksSinceBossActive > bossMusicLag){	
 			musicPlaying = true;
-			musPlayer.play(new Music("res/noescape.wav"));
+			musPlayer.play(new Music("res/music/noescape.wav"), 0);
 		}
 	}
 

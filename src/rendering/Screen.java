@@ -33,7 +33,7 @@ public class Screen extends JPanel{
 		this.render = new Raycaster(game);
 
 		try {
-			skybox = ImageIO.read(new File("res/skybox.png"));
+			skybox = ImageIO.read(new File("res/sprites/skybox.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -163,6 +163,7 @@ public class Screen extends JPanel{
 			Boss b = currentGame.getWorld().getBoss();
 			if(b.isActive()){
 				stripList.add(b);
+				stripList.addAll(currentGame.getWorld().getProjectiles());
 			}
 			Collections.sort(stripList, new StripComparator());
 			middlePixelSprite = null;

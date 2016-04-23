@@ -18,6 +18,7 @@ import game.Game;
 import game.Player;
 import rendering.Boss;
 import rendering.Camera;
+import rendering.Projectile;
 import rendering.Sprite;
 import rendering.Tile;
 import rendering.TileType;
@@ -29,6 +30,7 @@ public class Physics {
 	JFrame mainFrame;
 	public double frictionConstant = 0.5, stairThreshold = 0.21;
 	private double walk_speed = 0.2, jump_speed = 0.1, turn_speed = 0.01, gravity_const = 0.005;
+	private boolean isRising = false;
 	
 	public Physics(Game game, JFrame mainFrame){
 		this.mainFrame = mainFrame;
@@ -58,36 +60,50 @@ public class Physics {
 		if(timeToActivate){
 			player.cutscene();
 		}
+		Boss b = game.getWorld().getBoss();
+		if(b.isActive()){
+			Tile bTile = game.getWorld().getTileAt(game.getWorld().getBoss().getPositionX(), game.getWorld().getBoss().getPositionY());
+			if(bTile.getHeight() <= 0)
+				isRising = true;
+			if(isRising && bTile.getHeight() < 5)
+				bTile.rise(0.05);
+			else{
+				isRising = false;
+				b.setAccelZ(-0.05);
+				bTile.rise(-0.05);
+			}
+		}
 	}
 
 	public void calculatePhys(){
 		boolean music = false, bossMusic = false;
 		ArrayList<Sprite> allEnemies = new ArrayList<Sprite>(game.getWorld().getSpriteList());
 		allEnemies.add(game.getWorld().getBoss());
+		allEnemies.addAll(game.getWorld().getProjectiles());
 		for(int i = 0; i < allEnemies.size(); ++i){
 			Sprite enemy = allEnemies.get(i);
 			if(enemy.isAlive()){
-				if(!(enemy instanceof Boss)){
+					validateHeight(enemy);
 					double[] intendedPosition = new double[3];
 					//friction
 					enemy.setAccelX(enemy.getAccelX()*frictionConstant);
 					enemy.setAccelY(enemy.getAccelY()*frictionConstant);
 					intendedPosition[0] = enemy.getPositionX() + enemy.getAccelX();
 					intendedPosition[1] = enemy.getPositionY() + enemy.getAccelY();
-					intendedPosition[2] = enemy.getZPos();
+					intendedPosition[2] = enemy.getZPos() + enemy.getAccelZ();
 					if(!collisionCheck(enemy, intendedPosition, false)){
 						enemy.setPosition(intendedPosition[0], intendedPosition[1]);
 						enemy.setZ(intendedPosition[2]);
 					}
 					else
 						enemy.setAccelZ(0);
-					if(enemy.isInAttackingRadius() && enemy.isAlive())
-						enemy.attack(player, 5);					
-				}
+					if(enemy.isInAttackingRadius() && enemy.isAlive()){
+						enemy.attack(player, 5);
+					}
 				if(enemy instanceof Boss && ((Boss) enemy).isActive()){
 					bossMusic = true;
 				}
-				else if(!(enemy instanceof Boss) && enemy.isInMusicRadius()){
+				else if(!(enemy instanceof Boss) && !(enemy instanceof Projectile) && enemy.isInMusicRadius()){
 					music = true;
 				}
 			}
@@ -112,8 +128,6 @@ public class Physics {
 			player.setPosition(intendedPosition[0], intendedPosition[1]);
 			player.setZ(intendedPosition[2]);
 		}
-		else
-			player.setAccelZ(0);
 			
 	}
 	
@@ -137,7 +151,7 @@ public class Physics {
 	//checking enemies
 	public boolean collisionCheck(Sprite enemy, double[] intended, boolean gravity){
 		Tile[][] tiles = game.getWorld().getTiles();
-		Sprite intendedEnemy = new Sprite(intended[0], intended[1], enemy.getFileName(), game.getCamera(), game);
+		Sprite intendedEnemy = new Sprite(intended[0], intended[1], enemy.getFileName(), game);
 		intendedEnemy.setZ(intended[2]);
 		boolean hasCollidedYet = false;
 		for(int x = 0; x < tiles.length; ++x){
@@ -183,7 +197,7 @@ public class Physics {
 			//if within x and y is isn't an empty tile
 			if(intendedEnemy.getBottom() < tile.getTop() && intendedEnemy.getTop() > tile.getTop()){
 				//if it's intersecting it z-position wise
-				if(Math.abs(tile.getTop() - player.getBottom()) <= stairThreshold && !gravity){
+				if(Math.abs(tile.getTop() - intendedEnemy.getBottom()) <= stairThreshold && !gravity){
 					enemy.setPosition(intended[0], intended[1]);
 					enemy.setZ(tile.getTop());
 					enemy.setAccelZ(0);
@@ -283,6 +297,23 @@ public class Physics {
 			
 			if(!collisionCheck(gravity, true)){
 				player.setAccelZ(player.getAccelZ()-gravity_const);
+			}
+				
+		}
+	}
+	private void validateHeight(Sprite enemy){
+		if(enemy.getZPos() <= 0 && enemy.getAccelZ() <= 0){
+			enemy.setAccelZ(0);
+			enemy.setZ(0);
+		}
+		else{
+			double[] gravity = new double[3];
+			gravity[0] = enemy.getPositionX();
+			gravity[1] = enemy.getPositionY();
+			gravity[2] = enemy.getZPos() + (enemy.getAccelZ()-gravity_const);
+			
+			if(!collisionCheck(gravity, true)){
+				enemy.setAccelZ(enemy.getAccelZ()-gravity_const);
 			}
 				
 		}

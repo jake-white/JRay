@@ -18,6 +18,7 @@ public class World {
 	private BufferedImage worldImg;
 	private Tile[][] tileSet;
 	private ArrayList<Sprite> spriteSet;
+	private ArrayList<Projectile> projectiles;
 	double[][] configMap;
 	private Color playerInsertion;
 	private ArrayList<Point> lights;
@@ -28,6 +29,7 @@ public class World {
 	private int bossAlpha = 241, activationAlpha = 240, risingAlpha = 239;
 	private ArrayList<Tile> activationTiles;
 	private ArrayList<Tile> risingTiles;
+	private Tile bossTile;
 	
 	public World(Game game, String fileName){
 		playerInsertion = new Color(255, 0, 0);
@@ -50,6 +52,7 @@ public class World {
 		activationTiles = new ArrayList<Tile>();
 		risingTiles = new ArrayList<Tile>();
 		tileSet = new Tile[width][height];
+		projectiles = new ArrayList<Projectile>();
 		Color emptySpace = new Color(255, 255, 255, 0); //png transparent whitespace
 		for(int x = 0; x < width; ++x){
 			for(int y = 0; y < height; ++y){
@@ -73,10 +76,11 @@ public class World {
 					tileSet[x][y] = new Tile(colorAtCoord, configMap[colorAtCoord.getAlpha()][0], configMap[colorAtCoord.getAlpha()][1], x, y);
 				}
 				if(configMap[colorAtCoord.getAlpha()][2]==1){
-					spriteSet.add(new Sprite(x, y, "res/zombie.png", currentGame.getCamera(), this.currentGame));
+					spriteSet.add(new Sprite(x, y, "res/sprites/zombie.png", this.currentGame));
 				}
 				if(colorAtCoord.getAlpha() == bossAlpha){
-					boss = new Boss(x, y, "res/andy.png", currentGame.getCamera(), currentGame);
+					boss = new Boss(x+0.5, y+0.5, "res/sprites/andy.png", currentGame);
+					bossTile = tileSet[x][y];
 				}
 				if(colorAtCoord.getAlpha() == activationAlpha){
 					activationTiles.add(tileSet[x][y]);
@@ -139,6 +143,14 @@ public class World {
 	
 	public Boss getBoss(){
 		return boss;
+	}
+
+	public Tile getBossTile(){
+		return bossTile;
+	}
+	
+	public ArrayList<Projectile> getProjectiles(){
+		return projectiles;
 	}
 	
 	public Tile getTileAt(Point p){

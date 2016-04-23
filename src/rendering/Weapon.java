@@ -20,7 +20,7 @@ public class Weapon {
 		this.fileName = filename;
 		try {
 			for(int i = 0; i < img.length; ++i){
-				img[i] = ImageIO.read(new File("res/"+fileName+"_"+i+".png"));
+				img[i] = ImageIO.read(new File("res/sprites/"+fileName+"_"+i+".png"));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
