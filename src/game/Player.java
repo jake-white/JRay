@@ -11,7 +11,7 @@ public class Player {
 	double height  = 1;
 	double[] accel = new double[3];
 	RayPoint position;
-	private double hp = 200;
+	private double hp = 50;
 	private Game game;
 	private boolean inScene = false, sceneDone = false, canMove = true;
 	
